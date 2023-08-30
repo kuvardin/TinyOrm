@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Kuvardin\TinyOrm;
+namespace Kuvardin\TinyOrm\Enums;
 
 use Kuvardin\TinyOrm\Values\IsNull;
 use Kuvardin\TinyOrm\Values\NotNull;

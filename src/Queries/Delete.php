@@ -10,7 +10,7 @@ use Kuvardin\TinyOrm\QueryAbstract;
 
 class Delete extends QueryAbstract
 {
-    public function __construct(Pdo $pdo)
+    public function __construct(CustomPdo $pdo)
     {
         parent::__construct($pdo);
     }

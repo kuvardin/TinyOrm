@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Kuvardin\TinyOrm;
 
-use App;
 use RuntimeException;
 
 abstract class EntityAbstract
@@ -32,7 +31,7 @@ abstract class EntityAbstract
 
     abstract public static function getTable(): string;
 
-    public static function findOneById(int $id): ?static
+    public static function findOneById(CustomPdo $custom_pdo, int $id): ?static
     {
         App::pdo()
             ->createQueryBuilder()

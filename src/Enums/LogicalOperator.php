@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Kuvardin\TinyOrm;
+namespace Kuvardin\TinyOrm\Enums;
 
 enum LogicalOperator: string
 {
