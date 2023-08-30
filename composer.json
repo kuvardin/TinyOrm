@@ -1,0 +1,21 @@
+{
+    "name": "kuvardin/tiny-orm",
+    "description": "Simple PHP ORM",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Kuvardin\\TinyOrm\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Maxim Kuvardin",
+            "email": "maxim@kuvard.in"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "ext-pdo": "*"
+    }
+}
