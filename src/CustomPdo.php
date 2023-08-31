@@ -11,6 +11,27 @@ use RuntimeException;
 
 class CustomPdo extends PDO
 {
+    protected ?QueryBuilder $query_builder = null;
+    private ?string $connection_id = null;
+
+    /**
+     * @var string[]
+     */
+    private static array $connection_ids = [];
+
+    public function getConnectionId(): string
+    {
+        if ($this->connection_id === null) {
+            do {
+                $this->connection_id = (string)rand(0, PHP_INT_MAX);
+            } while (in_array($this->connection_id, self::$connection_ids));
+
+            self::$connection_ids[] = $this->connection_id;
+        }
+
+        return $this->connection_id;
+    }
+
     /**
      * @throws PDOException
      */
@@ -25,8 +46,8 @@ class CustomPdo extends PDO
         return $stmt;
     }
 
-    public function createQueryBuilder(): QueryBuilder
+    public function getQueryBuilder(): QueryBuilder
     {
-        return new QueryBuilder($this);
+        return $this->query_builder ??= new QueryBuilder($this);
     }
 }

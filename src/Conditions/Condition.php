@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Kuvardin\TinyOrm\Conditions;
 
 use Kuvardin\TinyOrm\Column;
-use Kuvardin\TinyOrm\LogicalOperator;
-use Kuvardin\TinyOrm\Operator;
+use Kuvardin\TinyOrm\Enums\LogicalOperator;
+use Kuvardin\TinyOrm\Enums\Operator;
 use Kuvardin\TinyOrm\Parameters;
 use Kuvardin\TinyOrm\Values\IsNull;
 use Kuvardin\TinyOrm\Values\NotNull;

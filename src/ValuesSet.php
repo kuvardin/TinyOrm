@@ -10,12 +10,7 @@ use RuntimeException;
 class ValuesSet
 {
     /**
-     * @var Column[]
-     */
-    protected array $columns = [];
-
-    /**
-     * @var array<int,int|float|bool|string|Column|null|ConditionAbstract>
+     * @var ColumnValue[]
      */
     protected array $values = [];
 
@@ -28,11 +23,10 @@ class ValuesSet
     public function add(Column $column, int|float|string|bool|Column|ConditionAbstract|null $value): self
     {
         if ($column->table !== null && $column->table->getFullName() !== $this->table->getFullName()) {
-            throw new RuntimeException();
+            throw new RuntimeException("Wrong column table: {$column->table->getFullName()}");
         }
 
-        $this->columns[] = $column;
-        $this->values[] = $value;
+        $this->values[] = new ColumnValue($column, $value);
         return $this;
     }
 
@@ -41,8 +35,11 @@ class ValuesSet
         return $this->table;
     }
 
+    /**
+     * @return ColumnValue[]
+     */
     public function getValues(): array
     {
-
+        return $this->values;
     }
 }

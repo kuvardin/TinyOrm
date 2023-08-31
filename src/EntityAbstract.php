@@ -4,52 +4,77 @@ declare(strict_types=1);
 
 namespace Kuvardin\TinyOrm;
 
+use Kuvardin\TinyOrm\Conditions\Condition;
+use Kuvardin\TinyOrm\Enums\Operator;
 use RuntimeException;
 
 abstract class EntityAbstract
 {
-    /**
-     * @var static[]
-     */
-    private static array $cache = [];
-
     public const COL_ID = 'id';
 
-    protected int $id;
+    protected CustomPdo $pdo;
+    public readonly Table $entity_table;
+    protected static Table $entity_table_default;
+    public readonly int $id;
 
-    public static Table $table;
+    /**
+     * @var static[][][]
+     */
+    protected static array $cache = [];
 
-    public function __construct(array $data)
+    public function __construct(CustomPdo $pdo, Table $table, array $data)
     {
+        $this->pdo = $pdo;
+        $this->entity_table = $table;
         $this->id = $data[self::COL_ID];
-        if (static::$table === null) {
-            throw new RuntimeException('Table was not set');
-        }
     }
 
-    abstract public static function getSchema(): string;
-
-    abstract public static function getTable(): string;
-
-    public static function findOneById(CustomPdo $custom_pdo, int $id): ?static
+    public static function requireOneById(
+        CustomPdo $pdo,
+        int $id,
+        Table $table = null,
+        bool $use_cache = true,
+    ): EntityAbstract
     {
-        App::pdo()
-            ->createQueryBuilder()
-            ->select()
+        return self::findOneById($pdo, $id, $table, $use_cache);
+    }
+
+    public static function findOneById(
+        CustomPdo $pdo,
+        int $id,
+        Table $table = null,
+        bool $use_cache = true,
+    ): ?EntityAbstract
+    {
+        $table ??= static::$entity_table_default;
+
+        if ($use_cache && ($item = self::getFromCacheById($pdo, $table, $id))) {
+            return $item;
+        }
+
+        $result = $pdo
+            ->getQueryBuilder()
+            ->createSelectQuery()
+            ->from($table)
+            ->where(new Condition($table->getColumn(EntityAbstract::COL_ID), $id, Operator::Equals))
+            ->limit(1)
             ->execute()
             ->fetch()
         ;
+
+        print_r($result);
+        $result = new static($pdo, $table, $result);
+        self::addToCache($result);
+        return $result;
     }
-    abstract public static function requireOneById(int $id): ?static;
 
-    public static function createWithFieldsValues(?int $id, array $data): static
+    protected static function getFromCacheById(CustomPdo $pdo, Table $table, int $id): ?static
     {
-
+        return self::$cache[$pdo->getConnectionId()][$table->getFullName()][$id] ?? null;
     }
 
-    
-    final public function getId(): int
+    protected static function addToCache(self $item): void
     {
-        return $this->id;
+        self::$cache[$item->pdo->getConnectionId()][$item->entity_table->getFullName()][$item->id] = $item;
     }
 }

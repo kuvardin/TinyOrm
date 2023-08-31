@@ -17,17 +17,17 @@ class QueryBuilder
 
     }
 
-    public function select(): Select
+    public function createSelectQuery(): Select
     {
         return new Select($this->pdo);
     }
 
-    public function insert(Table $into): Insert
+    public function createInsertQuery(Table $into): Insert
     {
         return new Insert($this->pdo, $into);
     }
 
-    public function delete(): Delete
+    public function createDeleteQuery(): Delete
     {
         return new Delete($this->pdo);
     }
