@@ -17,7 +17,7 @@ class Condition extends ConditionAbstract
 {
     public function __construct(
         public Column $column,
-        public IsNull|NotNull|string|float|bool|int|Column $value,
+        public IsNull|NotNull|string|float|bool|int|Column|EntityAbstract $value,
         public ?Operator $operator = null,
         LogicalOperator $prefix = null,
         bool $invert = null,
