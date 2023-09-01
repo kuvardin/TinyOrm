@@ -48,10 +48,11 @@ abstract class EntityAbstract
             ->fetch()
         ;
 
-        print_r($result);
-        $result = new static($pdo, $table, $result);
-        self::addToCache($result);
-        return $result;
+        if ($result === false) {
+            return null;
+        }
+
+        return new static($pdo, $table, $result);
     }
 
     public static function requireOneById(
@@ -77,19 +78,13 @@ abstract class EntityAbstract
             return $item;
         }
 
-        $result = $pdo
-            ->getQueryBuilder()
-            ->createSelectQuery()
-            ->from($table)
-            ->where(new Condition($table->getColumn(EntityAbstract::COL_ID), $id, Operator::Equals))
-            ->limit(1)
-            ->execute()
-            ->fetch()
-        ;
+        $condition = new Condition($table->getColumn(EntityAbstract::COL_ID), $id, Operator::Equals);
+        $result = self::findOneByConditions($pdo, $condition, $table);
 
-        print_r($result);
-        $result = new static($pdo, $table, $result);
-        self::addToCache($result);
+        if ($result !== null) {
+            self::addToCache($result);
+        }
+
         return $result;
     }
 
