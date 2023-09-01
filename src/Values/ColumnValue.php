@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Kuvardin\TinyOrm;
+namespace Kuvardin\TinyOrm\Values;
 
+use Kuvardin\TinyOrm\Column;
 use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
 
 class ColumnValue

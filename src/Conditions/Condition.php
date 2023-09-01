@@ -8,8 +8,8 @@ use Kuvardin\TinyOrm\Column;
 use Kuvardin\TinyOrm\Enums\LogicalOperator;
 use Kuvardin\TinyOrm\Enums\Operator;
 use Kuvardin\TinyOrm\Parameters;
-use Kuvardin\TinyOrm\Values\IsNull;
-use Kuvardin\TinyOrm\Values\NotNull;
+use Kuvardin\TinyOrm\SpecialValues\IsNull;
+use Kuvardin\TinyOrm\SpecialValues\NotNull;
 use RuntimeException;
 
 class Condition extends ConditionAbstract

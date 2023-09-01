@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Kuvardin\TinyOrm\Enums;
 
-use Kuvardin\TinyOrm\Values\IsNull;
-use Kuvardin\TinyOrm\Values\NotNull;
+use Kuvardin\TinyOrm\SpecialValues\IsNull;
+use Kuvardin\TinyOrm\SpecialValues\NotNull;
 
 enum Operator: string
 {

@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Kuvardin\TinyOrm;
+namespace Kuvardin\TinyOrm\Values;
 
+use Kuvardin\TinyOrm\Column;
 use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
+use Kuvardin\TinyOrm\Table;
 use RuntimeException;
 
 class ValuesSet
@@ -20,8 +22,15 @@ class ValuesSet
     {
     }
 
-    public function add(Column $column, int|float|string|bool|Column|ConditionAbstract|null $value): self
+    public function add(
+        Column|string $column,
+        int|float|string|bool|Column|ConditionAbstract|null $value,
+    ): self
     {
+        if (is_string($column)) {
+            $column = $this->table->getColumn($column);
+        }
+
         if ($column->table !== null && $column->table->getFullName() !== $this->table->getFullName()) {
             throw new RuntimeException("Wrong column table: {$column->table->getFullName()}");
         }

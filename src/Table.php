@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Kuvardin\TinyOrm;
 
+use Kuvardin\TinyOrm\Values\ValuesSet;
 use RuntimeException;
 
 class Table

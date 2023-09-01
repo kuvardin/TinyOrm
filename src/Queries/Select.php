@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Kuvardin\TinyOrm\Queries;
 
 use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
-use Kuvardin\TinyOrm\Conditions\ConditionsList;
 use Kuvardin\TinyOrm\FinalQuery;
 use Kuvardin\TinyOrm\Parameters;
 use Kuvardin\TinyOrm\CustomPdo;

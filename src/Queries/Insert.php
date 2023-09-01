@@ -9,7 +9,7 @@ use Kuvardin\TinyOrm\Parameters;
 use Kuvardin\TinyOrm\CustomPdo;
 use Kuvardin\TinyOrm\QueryAbstract;
 use Kuvardin\TinyOrm\Table;
-use Kuvardin\TinyOrm\ValuesSet;
+use Kuvardin\TinyOrm\Values\ValuesSet;
 use RuntimeException;
 
 /**

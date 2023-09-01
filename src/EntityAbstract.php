@@ -7,7 +7,6 @@ namespace Kuvardin\TinyOrm;
 use Kuvardin\TinyOrm\Conditions\Condition;
 use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
 use Kuvardin\TinyOrm\Enums\Operator;
-use RuntimeException;
 
 abstract class EntityAbstract
 {

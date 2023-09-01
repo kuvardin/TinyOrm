@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Kuvardin\TinyOrm\Values;
+namespace Kuvardin\TinyOrm\SpecialValues;
 
 class IsNull
 {

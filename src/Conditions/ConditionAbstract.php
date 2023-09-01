@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Kuvardin\TinyOrm\Conditions;
 
-use Kuvardin\TinyOrm\LogicalOperator;
+use Kuvardin\TinyOrm\Enums\LogicalOperator;
 use Kuvardin\TinyOrm\Parameters;
 
 abstract class ConditionAbstract
