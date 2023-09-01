@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kuvardin\TinyOrm\Conditions;
 
 use Kuvardin\TinyOrm\Column;
+use Kuvardin\TinyOrm\EntityAbstract;
 use Kuvardin\TinyOrm\Enums\LogicalOperator;
 use Kuvardin\TinyOrm\Enums\Operator;
 use Kuvardin\TinyOrm\Parameters;
@@ -46,49 +47,30 @@ class Condition extends ConditionAbstract
     public function getQueryString(Parameters $parameters): string
     {
         $operator = $this->operator ?? Operator::Equals;
-        switch ($operator) {
-            case Operator::Equals:
-                if ($this->value instanceof IsNull) {
-                    $result = "{$this->column->getFullName()} IS NULL";
-                } elseif ($this->value instanceof NotNull) {
-                    $result = "{$this->column->getFullName()} IS NOT NULL";
-                } elseif ($this->value instanceof Column) {
-                    $result = "{$this->column->getFullName()} {$operator->value} {$this->value->getFullName()}";
-                } else {
-                    $parameter = $parameters->pushValue($this->value);
-                    $result = "{$this->column->getFullName()} {$operator->value} $parameter";
-                }
-                break;
+        $value = $this->value instanceof EntityAbstract ? $this->value->id : $this->value;
+        $result = null;
 
-            case Operator::NotEquals:
-                if ($this->value instanceof IsNull) {
-                    $result = "{$this->column->getFullName()} IS NOT NULL";
-                } elseif ($this->value instanceof NotNull) {
-                    $result = "{$this->column->getFullName()} IS NULL";
-                } elseif ($this->value instanceof Column) {
-                    $result = "{$this->column->getFullName()} {$operator->value} {$this->value->getFullName()}";
-                } else {
-                    $parameter = $parameters->pushValue($this->value);
-                    $result = "{$this->column->getFullName()} {$operator->value} $parameter";
-                }
-                break;
+        if ($operator === Operator::Equals) {
+            if ($value instanceof IsNull) {
+                $result = "{$this->column->getFullName()} IS NULL";
+            } elseif ($value instanceof NotNull) {
+                $result = "{$this->column->getFullName()} IS NOT NULL";
+            }
+        } elseif ($operator === Operator::NotEquals) {
+            if ($value instanceof IsNull) {
+                $result = "{$this->column->getFullName()} IS NOT NULL";
+            } elseif ($value instanceof NotNull) {
+                $result = "{$this->column->getFullName()} IS NULL";
+            }
+        }
 
-            case Operator::Greater:
-            case Operator::GreaterOrEqual:
-            case Operator::Less:
-            case Operator::LessOrEqual:
-            case Operator::Like:
-            case Operator::ILike:
-                if ($this->value instanceof Column) {
-                    $result = "{$this->column->getFullName()} {$operator->value} {$this->value->getFullName()}";
-                } else {
-                    $parameter = $parameters->pushValue($this->value);
-                    $result = "{$this->column->getFullName()} {$operator->value} $parameter";
-                }
-                break;
-
-            default:
-                throw new RuntimeException("Unexpected operator: {$operator->value}");
+        if ($result === null) {
+            if ($value instanceof Column) {
+                $result = "{$this->column->getFullName()} {$operator->value} {$value->getFullName()}";
+            } else {
+                $parameter = $parameters->pushValue($value);
+                $result = "{$this->column->getFullName()} {$operator->value} $parameter";
+            }
         }
 
         return $this->invert ? "NOT ($result)" : $result;
