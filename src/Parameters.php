@@ -76,7 +76,7 @@ class Parameters
     public function bind(PDOStatement $statement): void
     {
         foreach ($this->parameters as $name => &$value) {
-            $statement->bindParam($name, $value, $this->types[$name] ?? PDO::PARAM_STR);
+            $statement->bindValue($name, $value, $this->types[$name] ?? PDO::PARAM_STR);
         }
     }
 
