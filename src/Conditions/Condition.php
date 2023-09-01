@@ -56,7 +56,7 @@ class Condition extends ConditionAbstract
                     $result = "{$this->column->getFullName()} {$operator->value} {$this->value->getFullName()}";
                 } else {
                     $parameter = $parameters->pushValue($this->value);
-                    $result = "{$this->column->getFullName()} {$operator->value} :$parameter";
+                    $result = "{$this->column->getFullName()} {$operator->value} $parameter";
                 }
                 break;
 
@@ -69,7 +69,7 @@ class Condition extends ConditionAbstract
                     $result = "{$this->column->getFullName()} {$operator->value} {$this->value->getFullName()}";
                 } else {
                     $parameter = $parameters->pushValue($this->value);
-                    $result = "{$this->column->getFullName()} {$operator->value} :$parameter";
+                    $result = "{$this->column->getFullName()} {$operator->value} $parameter";
                 }
                 break;
 
@@ -83,7 +83,7 @@ class Condition extends ConditionAbstract
                     $result = "{$this->column->getFullName()} {$operator->value} {$this->value->getFullName()}";
                 } else {
                     $parameter = $parameters->pushValue($this->value);
-                    $result = "{$this->column->getFullName()} {$operator->value} :$parameter";
+                    $result = "{$this->column->getFullName()} {$operator->value} $parameter";
                 }
                 break;
 

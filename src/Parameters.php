@@ -49,7 +49,7 @@ class Parameters
     public function generateName(): string
     {
         do {
-            $result = 'param_' . rand(0, PHP_INT_MAX);
+            $result = ':param_' . rand(0, PHP_INT_MAX);
         } while ($this->checkExists($result));
 
         return $result;
