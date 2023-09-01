@@ -4,11 +4,21 @@ declare(strict_types=1);
 
 namespace Kuvardin\TinyOrm;
 
+use PDO;
+use PDOStatement;
 use RuntimeException;
 
 class Parameters
 {
+    /**
+     * @var array<string,mixed>
+     */
     protected array $parameters = [];
+
+    /**
+     * @var array<string,int>
+     */
+    protected array $types = [];
 
     public static function fromArray(array $array): self
     {
@@ -24,20 +34,23 @@ class Parameters
         return $result;
     }
 
-    public function push(string $name, mixed $value): self
+    public function push(string $name, mixed $value, int $type = null): self
     {
         if (array_key_exists($name, $this->parameters)) {
             throw new RuntimeException("Parameter with name $name already set");
         }
 
         $this->parameters[$name] = $value;
+        if ($type !== null) {
+            $this->types[$name] = $type;
+        }
         return $this;
     }
 
-    public function pushValue(mixed $value): string
+    public function pushValue(mixed $value, int $type = null): string
     {
         $name = $this->generateName();
-        $this->push($name, $value);
+        $this->push($name, $value, $type);
         return $name;
     }
 
@@ -58,5 +71,17 @@ class Parameters
     public function toArray(): array
     {
         return $this->parameters;
+    }
+
+    public function bind(PDOStatement $statement): void
+    {
+        foreach ($this->parameters as $name => &$value) {
+            $statement->bindParam($name, $value, $this->types[$name] ?? PDO::PARAM_STR);
+        }
+    }
+
+    public function isEmpty(): bool
+    {
+        return $this->parameters === [];
     }
 }

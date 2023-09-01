@@ -11,16 +11,16 @@ use Kuvardin\TinyOrm\Enums\Operator;
 use Kuvardin\TinyOrm\Parameters;
 use Kuvardin\TinyOrm\SpecialValues\IsNull;
 use Kuvardin\TinyOrm\SpecialValues\NotNull;
-use RuntimeException;
 
 class Condition extends ConditionAbstract
 {
     public function __construct(
         public Column $column,
-        public IsNull|NotNull|string|float|bool|int|Column|EntityAbstract $value,
-        public ?Operator $operator = null,
+        public mixed $value,
+        public Operator $operator = Operator::Equals,
         LogicalOperator $prefix = null,
         bool $invert = null,
+        public ?int $pdo_param_type = null,
     )
     {
         parent::__construct($prefix, $invert);
@@ -46,17 +46,17 @@ class Condition extends ConditionAbstract
 
     public function getQueryString(Parameters $parameters): string
     {
-        $operator = $this->operator ?? Operator::Equals;
         $value = $this->value instanceof EntityAbstract ? $this->value->id : $this->value;
+
         $result = null;
 
-        if ($operator === Operator::Equals) {
+        if ($this->operator === Operator::Equals) {
             if ($value instanceof IsNull) {
                 $result = "{$this->column->getFullName()} IS NULL";
             } elseif ($value instanceof NotNull) {
                 $result = "{$this->column->getFullName()} IS NOT NULL";
             }
-        } elseif ($operator === Operator::NotEquals) {
+        } elseif ($this->operator === Operator::NotEquals) {
             if ($value instanceof IsNull) {
                 $result = "{$this->column->getFullName()} IS NOT NULL";
             } elseif ($value instanceof NotNull) {
@@ -66,10 +66,10 @@ class Condition extends ConditionAbstract
 
         if ($result === null) {
             if ($value instanceof Column) {
-                $result = "{$this->column->getFullName()} {$operator->value} {$value->getFullName()}";
+                $result = "{$this->column->getFullName()} {$this->operator->value} {$value->getFullName()}";
             } else {
-                $parameter = $parameters->pushValue($value);
-                $result = "{$this->column->getFullName()} {$operator->value} $parameter";
+                $parameter = $parameters->pushValue($value, $this->pdo_param_type);
+                $result = "{$this->column->getFullName()} {$this->operator->value} $parameter";
             }
         }
 

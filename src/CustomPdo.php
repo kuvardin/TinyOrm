@@ -42,7 +42,10 @@ class CustomPdo extends PDO
             throw new RuntimeException("Error preparing query: {$query->value}");
         }
 
-        $stmt->execute($query->parameters?->toArray());
+        if ($query->parameters !== null && !$query->parameters->isEmpty()) {
+            $query->parameters->bind($stmt);
+        }
+
         return $stmt;
     }
 
