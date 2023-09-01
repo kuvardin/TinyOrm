@@ -58,15 +58,15 @@ class Select extends QueryAbstract
         $result = "SELECT * FROM \"{$this->table->getFullName()}\"";
 
         if ($this->condition_item !== null) {
-            $result .= 'WHERE ' . $this->condition_item->getQueryString($parameters);
+            $result .= ' WHERE ' . $this->condition_item->getQueryString($parameters);
         }
 
         if ($this->limit !== null) {
-            $result .= 'LIMIT ' . $this->limit;
+            $result .= ' LIMIT ' . $this->limit;
         }
 
         if ($this->offset !== null) {
-            $result .= 'OFFSET ' . $this->offset;
+            $result .= ' OFFSET ' . $this->offset;
         }
 
         return new FinalQuery($result, $parameters);

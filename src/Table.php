@@ -26,7 +26,7 @@ class Table
 
     public function getFullName(): string
     {
-        return ($this->schema === null ? '' : "{$this->schema} . ") . $this->name;
+        return ($this->schema === null ? '' : "{$this->schema}.") . $this->name;
     }
 
     public function getColumn(string $column_name): Column
