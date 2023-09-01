@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kuvardin\TinyOrm;
 
 use Kuvardin\TinyOrm\Conditions\Condition;
+use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
 use Kuvardin\TinyOrm\Enums\Operator;
 use RuntimeException;
 
@@ -14,7 +15,6 @@ abstract class EntityAbstract
 
     protected CustomPdo $pdo;
     public readonly Table $entity_table;
-    protected static Table $entity_table_default;
     public readonly int $id;
 
     /**
@@ -27,6 +27,32 @@ abstract class EntityAbstract
         $this->pdo = $pdo;
         $this->entity_table = $table;
         $this->id = $data[self::COL_ID];
+    }
+
+    abstract public static function getEntityTableDefault(): Table;
+
+    public static function findOneByConditions(
+        CustomPdo $pdo,
+        ConditionAbstract $conditions,
+        Table $table = null,
+    ): ?static
+    {
+        $table ??= static::getEntityTableDefault();
+
+        $result = $pdo
+            ->getQueryBuilder()
+            ->createSelectQuery()
+            ->from($table)
+            ->where($conditions)
+            ->limit(1)
+            ->execute()
+            ->fetch()
+        ;
+
+        print_r($result);
+        $result = new static($pdo, $table, $result);
+        self::addToCache($result);
+        return $result;
     }
 
     public static function requireOneById(
@@ -46,7 +72,7 @@ abstract class EntityAbstract
         bool $use_cache = true,
     ): ?EntityAbstract
     {
-        $table ??= static::$entity_table_default;
+        $table ??= static::getEntityTableDefault();
 
         if ($use_cache && ($item = self::getFromCacheById($pdo, $table, $id))) {
             return $item;
