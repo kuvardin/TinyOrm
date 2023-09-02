@@ -46,6 +46,7 @@ class CustomPdo extends PDO
             $query->parameters->bind($stmt);
         }
 
+        $stmt->execute();
         return $stmt;
     }
 
