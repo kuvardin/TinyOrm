@@ -44,6 +44,7 @@ class Parameters
         if ($type !== null) {
             $this->types[$name] = $type;
         }
+
         return $this;
     }
 

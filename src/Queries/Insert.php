@@ -38,20 +38,51 @@ class Insert extends QueryAbstract
         }
     }
 
-    public function getFinalQuery(): FinalQuery
+    public function getFinalQuery(Parameters $parameters = null): FinalQuery
     {
-        $parameters = new Parameters;
-        $table_name = $this->into->getFullName() . ($this->into->alias === null ? null : "AS {$this->into->alias}");
+        $parameters ??= new Parameters;
+        $table_name = $this->into->getFullName() . ($this->into->alias === null ? null : " AS {$this->into->alias}");
         $result = "INSERT INTO $table_name";
 
-        $columns_names = [];
-        $values_strings = [];
+        /** @var string[] $column_names */
+        $column_names = [];
 
+        $values_rows = [];
         foreach ($this->values_sets as $values_set) {
             $values = [];
 
-//            foreach ($values_set->add())
+            foreach ($values_set->getValues() as $column_value) {
+                $column_name = $column_value->column->getFullName(true);
+                if (array_key_exists($column_name, $values)) {
+                    throw new RuntimeException("Duplicate column name in values set: $column_name");
+                }
+
+                if (!in_array($column_name, $column_names, true)) {
+                    $column_names[] = $column_name;
+                }
+
+                $values[$column_name] = $column_value->value_is_sql
+                    ? $column_value->value
+                    : $parameters->pushValue($column_value->value, $column_value->type);
+            }
+
+            $values_rows[] = $values;
         }
+
+        $result .= ' (' . implode(', ', $column_names) . ')';
+
+        $result_values_strings = [];
+        foreach ($values_rows as $values_row) {
+            $ordered_row = [];
+
+            foreach ($column_names as $column_name) {
+                $ordered_row[] = isset($values_row) ? $values_row[$column_name] : 'NULL';
+            }
+
+            $result_values_strings[] = '(' . implode(', ', $ordered_row) . ')';
+        }
+
+        $result .= ' VALUES ' . implode(', ', $result_values_strings);
 
         return new FinalQuery($result, $parameters);
     }

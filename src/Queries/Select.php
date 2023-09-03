@@ -51,9 +51,9 @@ class Select extends QueryAbstract
         return $this;
     }
 
-    public function getFinalQuery(): FinalQuery
+    public function getFinalQuery(Parameters $parameters = null): FinalQuery
     {
-        $parameters = new Parameters;
+        $parameters ??= new Parameters;
 
         $result = "SELECT * FROM \"{$this->table->getFullName()}\"";
 

@@ -15,7 +15,7 @@ abstract class QueryAbstract
         $this->pdo = $pdo;
     }
 
-    abstract public function getFinalQuery(): FinalQuery;
+    abstract public function getFinalQuery(Parameters $parameters = null): FinalQuery;
 
     final public function execute(): PDOStatement
     {

@@ -17,14 +17,14 @@ class ValuesSet
     protected array $values = [];
 
     public function __construct(
-        protected Table $table
+        readonly protected Table $table
     )
     {
     }
 
     public function add(
         Column|string $column,
-        int|float|string|bool|Column|ConditionAbstract|null $value,
+        mixed $value,
     ): self
     {
         if (is_string($column)) {

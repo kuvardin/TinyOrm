@@ -8,11 +8,15 @@ use Kuvardin\TinyOrm\Column;
 
 class ColumnValue
 {
+    readonly public Column $column;
+
     public function __construct(
-        public Column $column,
-        public mixed $value,
+        Column|string $column,
+        readonly public mixed $value,
+        readonly public ?int $type = null,
+        readonly public bool $value_is_sql = false,
     )
     {
-
+        $this->column = is_string($column) ? new Column($column) : $column;
     }
 }

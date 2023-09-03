@@ -6,6 +6,7 @@ namespace Kuvardin\TinyOrm\Queries;
 
 use Kuvardin\TinyOrm\FinalQuery;
 use Kuvardin\TinyOrm\Connection;
+use Kuvardin\TinyOrm\Parameters;
 use Kuvardin\TinyOrm\QueryAbstract;
 
 class Delete extends QueryAbstract
@@ -15,7 +16,7 @@ class Delete extends QueryAbstract
         parent::__construct($pdo);
     }
 
-    public function getFinalQuery(): FinalQuery
+    public function getFinalQuery(Parameters $parameters = null): FinalQuery
     {
         // TODO: Implement getFinalQuery() method.
     }
