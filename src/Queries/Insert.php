@@ -52,7 +52,10 @@ class Insert extends QueryAbstract
             $values = [];
 
             foreach ($values_set->getValues() as $column_value) {
-                $column_name = $column_value->column->getFullName(true);
+                $column_name = $column_value->column->table?->alias === null
+                    ? $column_value->column->name
+                    : $column_value->column->getFullName(true);
+
                 if (array_key_exists($column_name, $values)) {
                     throw new RuntimeException("Duplicate column name in values set: $column_name");
                 }
