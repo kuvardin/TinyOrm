@@ -16,15 +16,34 @@ class ValuesSet
      */
     protected array $values = [];
 
+    /**
+     * @param array<ColumnValue|string> $values
+     */
     public function __construct(
-        readonly protected Table $table
+        readonly protected Table $table,
+        array $values = [],
     )
     {
+        foreach ($values as $key => $value) {
+            if (is_int($key)) {
+                $this->addColumnValue($value);
+            } else {
+                $this->add($this->table->getColumn($key), $value);
+            }
+        }
+    }
+
+    public function addColumnValue(ColumnValue $column_value): self
+    {
+        $this->values[] = $column_value;
+        return $this;
     }
 
     public function add(
         Column|string $column,
         mixed $value,
+        int $type = null,
+        bool $value_is_sql = false,
     ): self
     {
         if (is_string($column)) {
@@ -35,7 +54,7 @@ class ValuesSet
             throw new RuntimeException("Wrong column table: {$column->table->getFullName()}");
         }
 
-        $this->values[] = new ColumnValue($column, $value);
+        $this->values[] = new ColumnValue($column, $value, $type, $value_is_sql);
         return $this;
     }
 
