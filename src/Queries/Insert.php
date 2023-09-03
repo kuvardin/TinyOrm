@@ -79,6 +79,8 @@ class Insert extends QueryAbstract
                     $values[$column_name] = $column_value->value ? 'True' : 'False';
                 } elseif ($column_value->value instanceof EntityAbstract) {
                     $values[$column_name] = $column_value->value->id;
+                } elseif ($column_value->value === null) {
+                    $values[$column_name] = 'NULL';
                 } else {
                     $values[$column_name] = $parameters->pushValue($column_value->value, $column_value->type);
                 }
@@ -94,7 +96,7 @@ class Insert extends QueryAbstract
             $ordered_row = [];
 
             foreach ($column_names as $column_name) {
-                $ordered_row[] = isset($values_row) ? $values_row[$column_name] : 'NULL';
+                $ordered_row[] = array_key_exists($column_name, $values_row) ? $values_row[$column_name] : 'DEFAULT';
             }
 
             $result_values_strings[] = '(' . implode(', ', $ordered_row) . ')';
@@ -120,8 +122,8 @@ class Insert extends QueryAbstract
 
     public function addValuesSet(ValuesSet $values_set): self
     {
-        if ($values_set->getTable()->getFullName() !== $this->into->getFullName()) {
-            throw new RuntimeException("Wrong value set table: {$values_set->getTable()->getFullName()}");
+        if (!$this->into->isEquals($values_set->table)) {
+            throw new RuntimeException("Wrong value set table: {$values_set->table->getFullName()}");
         }
 
         $this->values_sets[] = $values_set;

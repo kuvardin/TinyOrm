@@ -20,7 +20,7 @@ class ValuesSet
      * @param array<ColumnValue|mixed> $values
      */
     public function __construct(
-        readonly protected Table $table,
+        readonly public Table $table,
         array $values = [],
     )
     {
@@ -50,17 +50,12 @@ class ValuesSet
             $column = $this->table->getColumn($column);
         }
 
-        if ($column->table !== null && $column->table->getFullName() !== $this->table->getFullName()) {
+        if ($column->table !== null && !$this->table->isEquals($column->table)) {
             throw new RuntimeException("Wrong column table: {$column->table->getFullName()}");
         }
 
         $this->values[] = new ColumnValue($column, $value, $type, $value_is_sql);
         return $this;
-    }
-
-    public function getTable(): Table
-    {
-        return $this->table;
     }
 
     /**

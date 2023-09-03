@@ -24,6 +24,12 @@ class Table
         }
     }
 
+    public function isEquals(self $another_table): bool
+    {
+        return $this->name === $another_table->name
+            && ($this->schema === null || $another_table->schema === null || $this->schema === $another_table->schema);
+    }
+    
     public function getFullName(): string
     {
         return ($this->schema === null ? '' : "{$this->schema}.") . $this->name;
