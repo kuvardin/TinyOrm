@@ -14,8 +14,10 @@ use Kuvardin\TinyOrm\SpecialValues\NotNull;
 
 class Condition extends ConditionAbstract
 {
+    public Column|string $column;
+
     public function __construct(
-        public Column $column,
+        Column|string $column,
         public mixed $value,
         public Operator $operator = Operator::Equals,
         LogicalOperator $prefix = null,
@@ -23,11 +25,12 @@ class Condition extends ConditionAbstract
         public ?int $pdo_param_type = null,
     )
     {
+        $this->column = is_string($column) ? new Column($column) : $column;
         parent::__construct($prefix, $invert);
     }
 
     public static function isNull(
-        Column $column,
+        Column|string $column,
         LogicalOperator $prefix = null,
         bool $invert = null,
     ): self
@@ -36,7 +39,7 @@ class Condition extends ConditionAbstract
     }
 
     public static function notNull(
-        Column $column,
+        Column|string $column,
         LogicalOperator $prefix = null,
         bool $invert = null,
     ): self
