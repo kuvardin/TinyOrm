@@ -31,6 +31,7 @@ class Insert extends QueryAbstract
         Connection $pdo,
         public Table $into,
         array $values_sets = [],
+        public ?string $output_expression = null,
     )
     {
         parent::__construct($pdo);
@@ -38,6 +39,12 @@ class Insert extends QueryAbstract
         foreach ($values_sets as $values_set) {
             $this->addValuesSet($values_set);
         }
+    }
+
+    public function setOutputExpression(?string $output_expression): self
+    {
+        $this->output_expression = $output_expression;
+        return $this;
     }
 
     public function getFinalQuery(Parameters $parameters = null): FinalQuery
@@ -94,6 +101,10 @@ class Insert extends QueryAbstract
         }
 
         $result .= ' VALUES ' . implode(', ', $result_values_strings);
+
+        if ($this->output_expression !== null && $this->output_expression !== '') {
+            $result .= " RETURNING {$this->output_expression}";
+        }
 
         return new FinalQuery($result, $parameters);
     }
