@@ -67,17 +67,14 @@ class Insert extends QueryAbstract
 
                 if ($column_value->value_is_sql) {
                     $values[$column_name] = $column_value->value;
-                } else{
-                    if (is_bool($column_value->value)) {
-                        $value = $column_value->value ? 'True' : 'False';
-                    } elseif ($column_value->value instanceof EntityAbstract) {
-                        $value = $column_value->value->id;
-                    } else {
-                        $value = $column_value->value;
-                    }
+                } elseif (is_bool($column_value->value)) {
+                    $values[$column_name] = $column_value->value ? 'True' : 'False';
+                } elseif ($column_value->value instanceof EntityAbstract) {
+                    $values[$column_name] = $column_value->value->id;
+                } else {
+                    $values[$column_name] = $parameters->pushValue($column_value->value, $column_value->type);
+            }
 
-                    $values[$column_name] = $parameters->pushValue($value, $column_value->type);
-                }
 
             }
 
