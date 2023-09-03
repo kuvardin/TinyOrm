@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Kuvardin\TinyOrm\Queries;
 
+use Kuvardin\TinyOrm\EntityAbstract;
 use Kuvardin\TinyOrm\FinalQuery;
 use Kuvardin\TinyOrm\Parameters;
 use Kuvardin\TinyOrm\Connection;
@@ -64,9 +65,20 @@ class Insert extends QueryAbstract
                     $column_names[] = $column_name;
                 }
 
-                $values[$column_name] = $column_value->value_is_sql
-                    ? $column_value->value
-                    : $parameters->pushValue($column_value->value, $column_value->type);
+                if ($column_value->value_is_sql) {
+                    $values[$column_name] = $column_value->value;
+                } else{
+                    if (is_bool($column_value->value)) {
+                        $value = $column_value->value ? 'True' : 'False';
+                    } elseif ($column_value->value instanceof EntityAbstract) {
+                        $value = $column_value->value->id;
+                    } else {
+                        $value = $column_value->value;
+                    }
+
+                    $values[$column_name] = $parameters->pushValue($value, $column_value->type);
+                }
+
             }
 
             $values_rows[] = $values;
