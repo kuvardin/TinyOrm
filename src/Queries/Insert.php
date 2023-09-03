@@ -28,13 +28,13 @@ class Insert extends QueryAbstract
      * @param ValuesSet[] $values_sets
      */
     public function __construct(
-        Connection $pdo,
-        public Table $into,
+        Connection $connection,
+        public Table $table,
         array $values_sets = [],
         public ?string $output_expression = null,
     )
     {
-        parent::__construct($pdo);
+        parent::__construct($connection);
 
         foreach ($values_sets as $values_set) {
             $this->addValuesSet($values_set);
@@ -50,7 +50,7 @@ class Insert extends QueryAbstract
     public function getFinalQuery(Parameters $parameters = null): FinalQuery
     {
         $parameters ??= new Parameters;
-        $table_name = $this->into->getFullName() . ($this->into->alias === null ? null : " AS {$this->into->alias}");
+        $table_name = $this->table->getFullName() . ($this->table->alias === null ? null : " AS {$this->table->alias}");
         $result = "INSERT INTO $table_name";
 
         /** @var string[] $column_names */
@@ -73,17 +73,7 @@ class Insert extends QueryAbstract
                     $column_names[] = $column_name;
                 }
 
-                if ($column_value->value_is_sql) {
-                    $values[$column_name] = $column_value->value;
-                } elseif (is_bool($column_value->value)) {
-                    $values[$column_name] = $column_value->value ? 'True' : 'False';
-                } elseif ($column_value->value instanceof EntityAbstract) {
-                    $values[$column_name] = $column_value->value->id;
-                } elseif ($column_value->value === null) {
-                    $values[$column_name] = 'NULL';
-                } else {
-                    $values[$column_name] = $parameters->pushValue($column_value->value, $column_value->type);
-                }
+                $values[$column_name] = $column_value->getValueSql($parameters);
             }
 
             $values_rows[] = $values;
@@ -116,13 +106,13 @@ class Insert extends QueryAbstract
      */
     public function addValuesSetFromArray(array $values): self
     {
-        $this->addValuesSet(new ValuesSet($this->into, $values));
+        $this->addValuesSet(new ValuesSet($this->table, $values));
         return $this;
     }
 
     public function addValuesSet(ValuesSet $values_set): self
     {
-        if (!$this->into->isEquals($values_set->table)) {
+        if (!$this->table->isEquals($values_set->table)) {
             throw new RuntimeException("Wrong value set table: {$values_set->table->getFullName()}");
         }
 

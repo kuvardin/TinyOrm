@@ -28,7 +28,7 @@ abstract class EntityAbstract
     /**
      * @var ColumnValue[]
      */
-    protected array $changes = [];
+    protected array $unsaved_changes = [];
 
     public function __construct(Connection $connection, Table $table, array $data)
     {
@@ -38,6 +38,45 @@ abstract class EntityAbstract
     }
 
     abstract public static function getEntityTableDefault(): Table;
+
+    public function setFieldValue(
+        Column|string $column,
+        mixed &$current_value,
+        mixed $new_value,
+        int $type = null,
+        bool $force = false): self
+    {
+        if (is_string($column)) {
+            $column = $this->entity_table->getColumn($column);
+        } elseif ($column->table !== null && !$this->entity_table->isEquals($column->table)) {
+            throw new RuntimeException("Wrong column table: {$column->table->getFullName()}");
+        }
+
+        if ($force || $current_value !== $new_value) {
+            $this->unsaved_changes[$column->name] = new ColumnValue($column, $new_value, $type);
+        }
+
+        return $this;
+    }
+
+    public function saveChanges(): self
+    {
+        if ($this->unsaved_changes !== []) {
+            $data = $this->connection
+                ->getQueryBuilder()
+                ->createUpdateQuery($this->entity_table)
+                ->setValues($this->unsaved_changes)
+                ->setOutputExpression('*')
+                ->execute()
+                ->fetch()
+            ;
+
+            $this->unsaved_changes = [];
+            $this->__construct($this->connection, $this->entity_table, $data);
+        }
+
+        return $this;
+    }
 
     public static function createByValuesSet(Connection $connection, ValuesSet $values_set, Table $table = null): static
     {
@@ -109,7 +148,7 @@ abstract class EntityAbstract
     {
         $table ??= static::getEntityTableDefault();
 
-        if ($use_cache && ($item = self::getFromCacheById($connection, $table, $id))) {
+        if ($use_cache && ($item = self::getFromCacheById($connection, $id, $table))) {
             return $item;
         }
 
@@ -123,18 +162,25 @@ abstract class EntityAbstract
         return $result;
     }
 
-    protected static function getFromCacheById(Connection $connection, Table $table, int $id): ?static
+    protected static function getFromCacheById(Connection $connection, int $id, Table $table = null): ?static
     {
-        return self::$cache[$connection->getConnectionId()][$table->getFullName()][$id] ?? null;
+        $table ??= static::getEntityTableDefault();
+        return self::$cache[$connection->getConnectionId()][static::class][$table->getFullName()][$id] ?? null;
     }
 
     protected static function addToCache(self $item): void
     {
-        self::$cache[$item->connection->getConnectionId()][$item->entity_table->getFullName()][$item->id] = $item;
+        self::$cache[$item->connection->getConnectionId()][static::class][$item->entity_table->getFullName()][$item->id]
+            = $item;
     }
 
     public static function clearCacheFull(): void
     {
         self::$cache = [];
+    }
+
+    public static function clearCache(Connection $connection): void
+    {
+        self::$cache[$connection->getConnectionId()][static::class] = [];
     }
 }

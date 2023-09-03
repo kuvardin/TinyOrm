@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Kuvardin\TinyOrm\Values;
 
 use Kuvardin\TinyOrm\Column;
-use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
 use Kuvardin\TinyOrm\Table;
 use RuntimeException;
 
@@ -64,5 +63,10 @@ class ValuesSet
     public function getValues(): array
     {
         return $this->values;
+    }
+
+    public function isEmpty(): bool
+    {
+        return $this->values === [];
     }
 }

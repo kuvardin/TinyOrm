@@ -8,17 +8,17 @@ use PDOStatement;
 
 abstract class QueryAbstract
 {
-    protected Connection $pdo;
+    protected Connection $connection;
 
-    public function __construct(Connection $pdo)
+    public function __construct(Connection $connection)
     {
-        $this->pdo = $pdo;
+        $this->connection = $connection;
     }
 
     abstract public function getFinalQuery(Parameters $parameters = null): FinalQuery;
 
     final public function execute(): PDOStatement
     {
-        return $this->pdo->executeFinalQuery($this->getFinalQuery());
+        return $this->connection->executeFinalQuery($this->getFinalQuery());
     }
 }

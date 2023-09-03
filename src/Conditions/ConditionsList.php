@@ -59,4 +59,9 @@ class ConditionsList extends ConditionAbstract
         $result = implode(' ', $result_parts);
         return $this->invert ? "NOT ($result)" : $result;
     }
+
+    public function isEmpty(): bool
+    {
+        return $this->items === [];
+    }
 }

@@ -7,28 +7,34 @@ namespace Kuvardin\TinyOrm;
 use Kuvardin\TinyOrm\Queries\Delete;
 use Kuvardin\TinyOrm\Queries\Insert;
 use Kuvardin\TinyOrm\Queries\Select;
+use Kuvardin\TinyOrm\Queries\Update;
 
 class QueryBuilder
 {
     public function __construct(
-        protected Connection $pdo,
+        protected Connection $connection,
     )
     {
 
     }
 
-    public function createSelectQuery(): Select
+    public function createSelectQuery(Table $table = null): Select
     {
-        return new Select($this->pdo);
+        return new Select($this->connection, $table);
     }
 
-    public function createInsertQuery(Table $into): Insert
+    public function createInsertQuery(Table $table): Insert
     {
-        return new Insert($this->pdo, $into);
+        return new Insert($this->connection, $table);
     }
 
-    public function createDeleteQuery(): Delete
+    public function createDeleteQuery(Table $table): Delete
     {
-        return new Delete($this->pdo);
+        return new Delete($this->connection, $table);
+    }
+
+    public function createUpdateQuery(Table $table): Update
+    {
+        return new Update($this->connection, $table);
     }
 }
