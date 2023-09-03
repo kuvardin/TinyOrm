@@ -17,7 +17,7 @@ class ValuesSet
     protected array $values = [];
 
     /**
-     * @param array<ColumnValue|string> $values
+     * @param array<ColumnValue|mixed> $values
      */
     public function __construct(
         readonly protected Table $table,

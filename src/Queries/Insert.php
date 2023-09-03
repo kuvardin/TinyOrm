@@ -10,6 +10,7 @@ use Kuvardin\TinyOrm\Parameters;
 use Kuvardin\TinyOrm\Connection;
 use Kuvardin\TinyOrm\QueryAbstract;
 use Kuvardin\TinyOrm\Table;
+use Kuvardin\TinyOrm\Values\ColumnValue;
 use Kuvardin\TinyOrm\Values\ValuesSet;
 use RuntimeException;
 
@@ -73,9 +74,7 @@ class Insert extends QueryAbstract
                     $values[$column_name] = $column_value->value->id;
                 } else {
                     $values[$column_name] = $parameters->pushValue($column_value->value, $column_value->type);
-            }
-
-
+                }
             }
 
             $values_rows[] = $values;
@@ -97,6 +96,15 @@ class Insert extends QueryAbstract
         $result .= ' VALUES ' . implode(', ', $result_values_strings);
 
         return new FinalQuery($result, $parameters);
+    }
+
+    /**
+     * @param array<ColumnValue|mixed> $values
+     */
+    public function addValuesSetFromArray(array $values): self
+    {
+        $this->addValuesSet(new ValuesSet($this->into, $values));
+        return $this;
     }
 
     public function addValuesSet(ValuesSet $values_set): self
