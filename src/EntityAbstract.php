@@ -12,7 +12,7 @@ abstract class EntityAbstract
 {
     public const COL_ID = 'id';
 
-    protected CustomPdo $pdo;
+    protected Connection $pdo;
     public readonly Table $entity_table;
     public readonly int $id;
 
@@ -21,7 +21,7 @@ abstract class EntityAbstract
      */
     protected static array $cache = [];
 
-    public function __construct(CustomPdo $pdo, Table $table, array $data)
+    public function __construct(Connection $pdo, Table $table, array $data)
     {
         $this->pdo = $pdo;
         $this->entity_table = $table;
@@ -31,7 +31,7 @@ abstract class EntityAbstract
     abstract public static function getEntityTableDefault(): Table;
 
     public static function findOneByConditions(
-        CustomPdo $pdo,
+        Connection $pdo,
         ConditionAbstract $conditions,
         Table $table = null,
     ): ?static
@@ -56,7 +56,7 @@ abstract class EntityAbstract
     }
 
     public static function requireOneById(
-        CustomPdo $pdo,
+        Connection $pdo,
         int $id,
         Table $table = null,
         bool $use_cache = true,
@@ -66,7 +66,7 @@ abstract class EntityAbstract
     }
 
     public static function findOneById(
-        CustomPdo $pdo,
+        Connection $pdo,
         int $id,
         Table $table = null,
         bool $use_cache = true,
@@ -88,7 +88,7 @@ abstract class EntityAbstract
         return $result;
     }
 
-    protected static function getFromCacheById(CustomPdo $pdo, Table $table, int $id): ?static
+    protected static function getFromCacheById(Connection $pdo, Table $table, int $id): ?static
     {
         return self::$cache[$pdo->getConnectionId()][$table->getFullName()][$id] ?? null;
     }

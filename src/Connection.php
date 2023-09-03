@@ -9,7 +9,7 @@ use PDOException;
 use PDOStatement;
 use RuntimeException;
 
-class CustomPdo extends PDO
+class Connection extends PDO
 {
     protected ?QueryBuilder $query_builder = null;
     private ?string $connection_id = null;
@@ -18,6 +18,29 @@ class CustomPdo extends PDO
      * @var string[]
      */
     private static array $connection_ids = [];
+
+    public static function create(
+        string $adapter,
+        string $host,
+        string $port,
+        string $base,
+        string $username,
+        string $password,
+        array $options = null,
+    ): self
+    {
+        $dsn = sprintf(
+            "%s:host=%s;port=%d;dbname=%s;user=%s;password=%s",
+            $adapter,
+            $host,
+            $port,
+            $base,
+            $username,
+            $password,
+        );
+
+        return new self($dsn, options: $options);
+    }
 
     public function getConnectionId(): string
     {

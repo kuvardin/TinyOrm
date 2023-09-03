@@ -8,9 +8,9 @@ use PDOStatement;
 
 abstract class QueryAbstract
 {
-    protected CustomPdo $pdo;
+    protected Connection $pdo;
 
-    public function __construct(CustomPdo $pdo)
+    public function __construct(Connection $pdo)
     {
         $this->pdo = $pdo;
     }

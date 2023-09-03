@@ -7,7 +7,7 @@ namespace Kuvardin\TinyOrm\Queries;
 use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
 use Kuvardin\TinyOrm\FinalQuery;
 use Kuvardin\TinyOrm\Parameters;
-use Kuvardin\TinyOrm\CustomPdo;
+use Kuvardin\TinyOrm\Connection;
 use Kuvardin\TinyOrm\QueryAbstract;
 use Kuvardin\TinyOrm\Table;
 
@@ -17,7 +17,7 @@ use Kuvardin\TinyOrm\Table;
 class Select extends QueryAbstract
 {
     public function __construct(
-        CustomPdo $pdo,
+        Connection $pdo,
         public ?Table $table = null,
         public ?ConditionAbstract $condition_item = null,
         public ?int $limit = null,

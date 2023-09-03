@@ -6,7 +6,7 @@ namespace Kuvardin\TinyOrm\Queries;
 
 use Kuvardin\TinyOrm\FinalQuery;
 use Kuvardin\TinyOrm\Parameters;
-use Kuvardin\TinyOrm\CustomPdo;
+use Kuvardin\TinyOrm\Connection;
 use Kuvardin\TinyOrm\QueryAbstract;
 use Kuvardin\TinyOrm\Table;
 use Kuvardin\TinyOrm\Values\ValuesSet;
@@ -26,7 +26,7 @@ class Insert extends QueryAbstract
      * @param ValuesSet[] $values_sets
      */
     public function __construct(
-        CustomPdo $pdo,
+        Connection $pdo,
         public Table $into,
         array $values_sets = [],
     )

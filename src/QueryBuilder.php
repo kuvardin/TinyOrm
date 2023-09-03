@@ -11,7 +11,7 @@ use Kuvardin\TinyOrm\Queries\Select;
 class QueryBuilder
 {
     public function __construct(
-        protected CustomPdo $pdo,
+        protected Connection $pdo,
     )
     {
 
