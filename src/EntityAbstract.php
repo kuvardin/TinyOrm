@@ -9,6 +9,7 @@ use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
 use Kuvardin\TinyOrm\Enums\Operator;
 use Kuvardin\TinyOrm\Values\ColumnValue;
 use Kuvardin\TinyOrm\Values\ValuesSet;
+use PDOException;
 use RuntimeException;
 
 abstract class EntityAbstract
@@ -78,6 +79,9 @@ abstract class EntityAbstract
         return $this;
     }
 
+    /**
+     * @throws PDOException
+     */
     public static function createByValuesSet(Connection $connection, ValuesSet $values_set, Table $table = null): static
     {
         $table ??= static::getEntityTableDefault();

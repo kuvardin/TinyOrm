@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Kuvardin\TinyOrm;
 
+use PDOException;
 use PDOStatement;
 
 abstract class QueryAbstract
@@ -17,6 +18,9 @@ abstract class QueryAbstract
 
     abstract public function getFinalQuery(Parameters $parameters = null): FinalQuery;
 
+    /**
+     * @throws PDOException
+     */
     final public function execute(): PDOStatement
     {
         return $this->connection->executeFinalQuery($this->getFinalQuery());
