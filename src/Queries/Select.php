@@ -21,9 +21,18 @@ class Select extends QueryAbstract
 {
     use QueryConditionsListTrait;
 
+    /**
+     * @param Connection $connection
+     * @param Table|null $table
+     * @param array|null $sele_expressions_sql
+     * @param ConditionAbstract|null $condition_item
+     * @param int|null $limit
+     * @param int|null $offset
+     */
     public function __construct(
         Connection $connection,
         public ?Table $table = null,
+        public ?array $select_expressions_sql = null,
         ?ConditionAbstract $condition_item = null,
         public ?int $limit = null,
         public ?int $offset = null,
@@ -39,6 +48,14 @@ class Select extends QueryAbstract
         return $this;
     }
 
+    /**
+     * @param string[]|null $select_expressions_sql
+     */
+    public function selectExpressionsSql(?array $select_expressions_sql): self
+    {
+        $this->select_expressions_sql = $select_expressions_sql;
+        return $this;
+    }
 
     public function limit(?int $limit): self
     {
@@ -55,8 +72,8 @@ class Select extends QueryAbstract
     public function getFinalQuery(Parameters $parameters = null): FinalQuery
     {
         $parameters ??= new Parameters;
-
-        $result = "SELECT * FROM \"{$this->table->getFullName()}\"";
+        $expression = empty($this->select_expressions_sql) ? '*' : implode(', ', $this->select_expressions_sql);
+        $result = "SELECT $expression FROM \"{$this->table->getFullName()}\"";
 
         if (!$this->conditions->isEmpty()) {
             $result .= ' WHERE ' . $this->conditions->getQueryString($parameters);

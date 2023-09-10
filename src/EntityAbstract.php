@@ -133,6 +133,40 @@ abstract class EntityAbstract
         return new static($connection, $table, $result);
     }
 
+    public static function checkExists(
+        Connection $connection,
+        ConditionAbstract $conditions = null,
+        Table $table = null,
+    ): ?static
+    {
+        $table ??= static::getEntityTableDefault();
+
+        $qb = $connection
+            ->getQueryBuilder()
+            ->createSelectQuery()
+            ->selectExpressionsSql([
+                $table->alias === null ? "COUNT(*)" : "COUNT({$table->alias}.*)",
+            ])
+            ->from($table);
+
+        if ($conditions !== null) {
+            $qb->where($conditions);
+        }
+
+        $result = $qb
+            ->limit(1)
+            ->execute()
+            ->fetch()
+        ;
+
+        if ($result === false) {
+            return null;
+        }
+
+        print_r($result);
+        return $result;
+    }
+
     public static function requireOneById(
         Connection $connection,
         int $id,
