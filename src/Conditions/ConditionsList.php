@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kuvardin\TinyOrm\Conditions;
 
 use Kuvardin\TinyOrm\Enums\LogicalOperator;
+use Kuvardin\TinyOrm\Enums\Operator;
 use Kuvardin\TinyOrm\Parameters;
 use RuntimeException;
 
@@ -28,6 +29,31 @@ class ConditionsList extends ConditionAbstract
         foreach ($items as $item) {
             $this->append($item);
         }
+    }
+
+    public static function fromValuesArray(
+        array $values_array,
+        LogicalOperator $prefix = LogicalOperator::And,
+        bool $invert = false,
+    ): self
+    {
+        $result = new self(
+            prefix: $prefix,
+            invert: $invert,
+        );
+
+        foreach ($values_array as $column => $value) {
+            $result->append(
+                new Condition(
+                    column: $column,
+                    value: $value,
+                    operator: Operator::Equals,
+                    prefix: LogicalOperator::And,
+                ),
+            );
+        }
+
+        return $result;
     }
 
     public function append(ConditionAbstract $item): self

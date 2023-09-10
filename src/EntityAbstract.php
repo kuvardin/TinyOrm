@@ -6,6 +6,7 @@ namespace Kuvardin\TinyOrm;
 
 use Kuvardin\TinyOrm\Conditions\Condition;
 use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
+use Kuvardin\TinyOrm\Conditions\ConditionsList;
 use Kuvardin\TinyOrm\Enums\Operator;
 use Kuvardin\TinyOrm\Values\ColumnValue;
 use Kuvardin\TinyOrm\Values\ValuesSet;
@@ -45,7 +46,8 @@ abstract class EntityAbstract
         mixed &$current_value,
         mixed $new_value,
         int $type = null,
-        bool $force = false): self
+        bool $force = false,
+    ): self
     {
         if (is_string($column)) {
             $column = $this->entity_table->getColumn($column);
@@ -133,7 +135,21 @@ abstract class EntityAbstract
         return new static($connection, $table, $result);
     }
 
-    public static function checkExists(
+    public static function requireOneByConditions(
+        Connection $connection,
+        ConditionAbstract $conditions,
+        Table $table = null,
+    ): static
+    {
+        $result = self::findOneByConditions($connection, $conditions, $table);
+        if ($result === null) {
+            throw new RuntimeException('Table row not found');
+        }
+
+        return $result;
+    }
+
+    public static function checkExistsByConditions(
         Connection $connection,
         ConditionAbstract $conditions = null,
         Table $table = null,
@@ -162,7 +178,7 @@ abstract class EntityAbstract
         return !($result === false);
     }
 
-    public static function count(
+    public static function countByConditions(
         Connection $connection,
         ConditionAbstract $conditions = null,
         Table $table = null,
@@ -196,9 +212,14 @@ abstract class EntityAbstract
         int $id,
         Table $table = null,
         bool $use_cache = true,
-    ): EntityAbstract
+    ): static
     {
-        return self::findOneById($connection, $id, $table, $use_cache);
+        $result = self::findOneById($connection, $id, $table, $use_cache);
+        if ($result === null) {
+            throw new RuntimeException("Table row not found by id: $id");
+        }
+
+        return $result;
     }
 
     public static function findOneById(
@@ -206,7 +227,7 @@ abstract class EntityAbstract
         int $id,
         Table $table = null,
         bool $use_cache = true,
-    ): ?EntityAbstract
+    ): ?static
     {
         $table ??= static::getEntityTableDefault();
 
@@ -214,8 +235,13 @@ abstract class EntityAbstract
             return $item;
         }
 
-        $condition = new Condition($table->getColumn(EntityAbstract::COL_ID), $id, Operator::Equals);
-        $result = self::findOneByConditions($connection, $condition, $table);
+        $result = self::findOneByConditions(
+            connection: $connection,
+            conditions: ConditionsList::fromValuesArray([
+                EntityAbstract::COL_ID => $id,
+            ]),
+            table: $table,
+        );
 
         if ($result !== null) {
             self::addToCache($result);
