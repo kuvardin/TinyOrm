@@ -137,7 +137,7 @@ abstract class EntityAbstract
         Connection $connection,
         ConditionAbstract $conditions = null,
         Table $table = null,
-    ): ?static
+    ): bool
     {
         $table ??= static::getEntityTableDefault();
 
@@ -156,15 +156,39 @@ abstract class EntityAbstract
         $result = $qb
             ->limit(1)
             ->execute()
-            ->fetch()
+            ->fetchColumn()
         ;
 
-        if ($result === false) {
-            return null;
+        return !($result === false);
+    }
+
+    public static function count(
+        Connection $connection,
+        ConditionAbstract $conditions = null,
+        Table $table = null,
+    ): int
+    {
+        $table ??= static::getEntityTableDefault();
+
+        $qb = $connection
+            ->getQueryBuilder()
+            ->createSelectQuery()
+            ->selectExpressionsSql([
+                $table->alias === null ? "COUNT(*)" : "COUNT({$table->alias}.*)",
+            ])
+            ->from($table);
+
+        if ($conditions !== null) {
+            $qb->where($conditions);
         }
 
-        print_r($result);
-        return $result;
+        $result = $qb
+            ->limit(1)
+            ->execute()
+            ->fetchColumn()
+        ;
+
+        return $result === false ? 0 : $result;
     }
 
     public static function requireOneById(
