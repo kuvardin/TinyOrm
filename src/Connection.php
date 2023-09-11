@@ -12,6 +12,7 @@ use RuntimeException;
 class Connection extends PDO
 {
     protected ?QueryBuilder $query_builder = null;
+    protected ?ExpressionBuilder $expression_builder = null;
     private ?string $connection_id = null;
 
     /**
@@ -76,5 +77,10 @@ class Connection extends PDO
     public function getQueryBuilder(): QueryBuilder
     {
         return $this->query_builder ??= new QueryBuilder($this);
+    }
+
+    public function getExpressionBuilder(): ExpressionBuilder
+    {
+        return $this->expression_builder ??= new ExpressionBuilder;
     }
 }
