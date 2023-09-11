@@ -8,6 +8,7 @@ use Kuvardin\TinyOrm\Conditions\Condition;
 use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
 use Kuvardin\TinyOrm\Conditions\ConditionsList;
 use Kuvardin\TinyOrm\Enums\Operator;
+use Kuvardin\TinyOrm\Expressions\ExpressionAbstract;
 use Kuvardin\TinyOrm\Values\ColumnValue;
 use Kuvardin\TinyOrm\Values\ValuesSet;
 use PDOException;
@@ -55,7 +56,7 @@ abstract class EntityAbstract
             throw new RuntimeException("Wrong column table: {$column->table->getFullName()}");
         }
 
-        if ($force || $current_value !== $new_value) {
+        if ($force || $current_value instanceof ExpressionAbstract || $current_value !== $new_value) {
             $this->unsaved_changes[$column->name] = new ColumnValue($column, $new_value, $type);
         }
 

@@ -6,6 +6,7 @@ namespace Kuvardin\TinyOrm\Values;
 
 use Kuvardin\TinyOrm\Column;
 use Kuvardin\TinyOrm\EntityAbstract;
+use Kuvardin\TinyOrm\Expressions\ExpressionAbstract;
 use Kuvardin\TinyOrm\Parameters;
 
 class ColumnValue
@@ -34,6 +35,10 @@ class ColumnValue
 
         if ($this->value instanceof EntityAbstract) {
             return $this->value->id;
+        }
+
+        if ($this->value instanceof ExpressionAbstract) {
+            return '(' . $this->value->getQueryString($parameters) . ')';
         }
 
         if ($this->value === null) {
