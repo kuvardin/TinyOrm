@@ -21,8 +21,8 @@ abstract class QueryAbstract
     /**
      * @throws PDOException
      */
-    final public function execute(): PDOStatement
+    final public function execute(Parameters $parameters = null): PDOStatement
     {
-        return $this->connection->executeFinalQuery($this->getFinalQuery());
+        return $this->connection->executeFinalQuery($this->getFinalQuery($parameters));
     }
 }

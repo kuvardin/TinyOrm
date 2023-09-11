@@ -52,8 +52,9 @@ class Delete extends QueryAbstract
     public function getFinalQuery(Parameters $parameters = null): FinalQuery
     {
         $parameters ??= new Parameters;
-        $table_name = $this->table->getFullName() . ($this->table->alias === null ? null : " AS {$this->table->alias}");
-        $result = $this->only ? "DELETE FROM ONLY $table_name" : "DELETE FROM $table_name";
+        $result = $this->only
+            ? "DELETE FROM ONLY {$this->table->getFullName()}"
+            : "DELETE FROM {$this->table->getFullName()}";
 
         if (!$this->conditions->isEmpty()) {
             $result .= ' WHERE ' . $this->conditions->getQueryString($parameters);

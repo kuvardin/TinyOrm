@@ -81,14 +81,13 @@ class Update extends QueryAbstract
         }
 
         $parameters ??= new Parameters;
-        $table_name = $this->table->getFullName() . ($this->table->alias === null ? null : " AS {$this->table->alias}");
-        $result = $this->only ? "UPDATE ONLY $table_name" : "UPDATE $table_name";
+        $result = $this->only ? "UPDATE ONLY {$this->table->getFullName()}" : "UPDATE {$this->table->getFullName()}";
 
         $set_strings = [];
         foreach ($this->values_set->getValues() as $column_value) {
             $set_strings[] = sprintf(
                 '"%s" = %s',
-                $column_value->column->getFullName(true),
+                $column_value->column->getFullName(),
                 $column_value->getValueSql($parameters),
             );
         }

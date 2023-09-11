@@ -18,15 +18,9 @@ class Column
         }
     }
 
-    public function getFullName(bool $use_table_alias = false): string
+    public function getFullName(): string
     {
-        if ($this->table !== null) {
-            return $use_table_alias && $this->table->alias !== null
-                ? "{$this->table->alias}.{$this->name}"
-                : "{$this->table->getFullName()}.{$this->name}";
-        }
-
-        return $this->name;
+        return $this->table === null ? $this->name : "{$this->table->getFullName()}.{$this->name}";
     }
 
     public static function validateName(string $name_part): bool

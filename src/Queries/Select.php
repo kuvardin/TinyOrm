@@ -24,7 +24,7 @@ class Select extends QueryAbstract
     /**
      * @param Connection $connection
      * @param Table|null $table
-     * @param array|null $sele_expressions_sql
+     * @param array|null $select_expressions_sql
      * @param ConditionAbstract|null $condition_item
      * @param int|null $limit
      * @param int|null $offset

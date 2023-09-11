@@ -50,8 +50,7 @@ class Insert extends QueryAbstract
     public function getFinalQuery(Parameters $parameters = null): FinalQuery
     {
         $parameters ??= new Parameters;
-        $table_name = $this->table->getFullName() . ($this->table->alias === null ? null : " AS {$this->table->alias}");
-        $result = "INSERT INTO $table_name";
+        $result = "INSERT INTO {$this->table->getFullName()}";
 
         /** @var string[] $column_names */
         $column_names = [];
@@ -61,19 +60,15 @@ class Insert extends QueryAbstract
             $values = [];
 
             foreach ($values_set->getValues() as $column_value) {
-                $column_name = $column_value->column->table?->alias === null
-                    ? $column_value->column->name
-                    : $column_value->column->getFullName(true);
-
-                if (array_key_exists($column_name, $values)) {
-                    throw new RuntimeException("Duplicate column name in values set: $column_name");
+                if (array_key_exists($column_value->column->name, $values)) {
+                    throw new RuntimeException("Duplicate column name in values set: {$column_value->column->name}");
                 }
 
-                if (!in_array($column_name, $column_names, true)) {
-                    $column_names[] = $column_name;
+                if (!in_array($column_value->column->name, $column_names, true)) {
+                    $column_names[] = $column_value->column->name;
                 }
 
-                $values[$column_name] = $column_value->getValueSql($parameters);
+                $values[$column_value->column->name] = $column_value->getValueSql($parameters);
             }
 
             $values_rows[] = $values;

@@ -160,9 +160,7 @@ abstract class EntityAbstract
         $qb = $connection
             ->getQueryBuilder()
             ->createSelectQuery()
-            ->selectExpressionsSql([
-                $table->alias === null ? "COUNT(*)" : "COUNT({$table->alias}.*)",
-            ])
+            ->selectExpressionsSql(["COUNT(*)"])
             ->from($table);
 
         if ($conditions !== null) {
@@ -189,9 +187,7 @@ abstract class EntityAbstract
         $qb = $connection
             ->getQueryBuilder()
             ->createSelectQuery()
-            ->selectExpressionsSql([
-                $table->alias === null ? "COUNT(*)" : "COUNT({$table->alias}.*)",
-            ])
+            ->selectExpressionsSql(["COUNT(*)"])
             ->from($table);
 
         if ($conditions !== null) {
