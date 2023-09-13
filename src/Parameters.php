@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Kuvardin\TinyOrm;
 
-use PDO;
+use Kuvardin\TinyOrm\Values\ColumnValue;
 use PDOStatement;
 use RuntimeException;
 
@@ -77,6 +77,10 @@ class Parameters
     public function bind(PDOStatement $statement): void
     {
         foreach ($this->parameters as $name => $value) {
+            if ($value instanceof ColumnValue) {
+                $value = $value->getValueSql($this);
+            }
+
             if (isset($this->types[$name])) {
                 $statement->bindValue($name, $value, $this->types[$name]);
             } else {

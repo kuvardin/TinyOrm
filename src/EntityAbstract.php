@@ -57,6 +57,12 @@ abstract class EntityAbstract
         }
 
         if ($force || $current_value instanceof ExpressionAbstract || $current_value !== $new_value) {
+            if ($new_value instanceof ColumnValue) {
+                if (!$column->isEquals($new_value->column)) {
+                    throw new RuntimeException("Unexpected column: {$new_value->column} (must be $column)");
+                }
+            }
+
             $this->unsaved_changes[$column->name] = $new_value instanceof ColumnValue
                 ? $new_value
                 : new ColumnValue($column, $new_value, $type);
