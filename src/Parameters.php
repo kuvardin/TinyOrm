@@ -7,6 +7,7 @@ namespace Kuvardin\TinyOrm;
 use Kuvardin\TinyOrm\Values\ColumnValue;
 use PDOStatement;
 use RuntimeException;
+use PDO;
 
 class Parameters
 {
@@ -38,6 +39,10 @@ class Parameters
     {
         if (array_key_exists($name, $this->parameters)) {
             throw new RuntimeException("Parameter with name $name already set");
+        }
+
+        if ($type === null && is_bool($value)) {
+            $type = PDO::PARAM_BOOL;
         }
 
         $this->parameters[$name] = $value;
