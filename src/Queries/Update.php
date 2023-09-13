@@ -87,7 +87,7 @@ class Update extends QueryAbstract
         foreach ($this->values_set->getValues() as $column_value) {
             $set_strings[] = sprintf(
                 '"%s" = %s',
-                $column_value->column->getFullName(),
+                $column_value->column->name,
                 $column_value->getValueSql($parameters),
             );
         }

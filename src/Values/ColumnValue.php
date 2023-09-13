@@ -8,6 +8,7 @@ use Kuvardin\TinyOrm\Column;
 use Kuvardin\TinyOrm\EntityAbstract;
 use Kuvardin\TinyOrm\Expressions\ExpressionAbstract;
 use Kuvardin\TinyOrm\Parameters;
+use RuntimeException;
 
 class ColumnValue
 {
@@ -20,6 +21,10 @@ class ColumnValue
         readonly public bool $value_is_sql = false,
     )
     {
+        if ($this->value instanceof self) {
+            throw new RuntimeException('Column value cannot be instance of ColumnValue');
+        }
+
         $this->column = is_string($column) ? new Column($column) : $column;
     }
 

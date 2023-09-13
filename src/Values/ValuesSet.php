@@ -26,6 +26,14 @@ class ValuesSet
         foreach ($values as $key => $value) {
             if (is_int($key)) {
                 $this->addColumnValue($value);
+            } elseif ($value instanceof ColumnValue) {
+                if ($value->column->table !== null && !$value->column->table->isEquals($this->table)) {
+                    throw new RuntimeException(
+                        "Unexpected column value table: {$value->column->table} (must be {$this->table})",
+                    );
+                }
+
+                $this->addColumnValue($value);
             } else {
                 $this->add($this->table->getColumn($key), $value);
             }

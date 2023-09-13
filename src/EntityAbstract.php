@@ -61,11 +61,11 @@ abstract class EntityAbstract
                 if (!$column->isEquals($new_value->column)) {
                     throw new RuntimeException("Unexpected column: {$new_value->column} (must be $column)");
                 }
-            }
 
-            $this->unsaved_changes[$column->name] = $new_value instanceof ColumnValue
-                ? $new_value
-                : new ColumnValue($column, $new_value, $type);
+                $this->unsaved_changes[$column->name] = $new_value;
+            } else {
+                $this->unsaved_changes[$column->name] = new ColumnValue($column, $new_value, $type);
+            }
         }
 
         return $this;
