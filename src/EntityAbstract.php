@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Kuvardin\TinyOrm;
 
-use Kuvardin\TinyOrm\Conditions\Condition;
 use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
 use Kuvardin\TinyOrm\Conditions\ConditionsList;
-use Kuvardin\TinyOrm\Enums\Operator;
 use Kuvardin\TinyOrm\Expressions\ExpressionAbstract;
 use Kuvardin\TinyOrm\Values\ColumnValue;
 use Kuvardin\TinyOrm\Values\ValuesSet;
@@ -24,9 +22,8 @@ abstract class EntityAbstract
     protected static array $cache = [];
 
     protected Connection $connection;
-    public readonly Table $entity_table;
-
-    public readonly int $id;
+    protected Table $entity_table;
+    protected int $id;
 
     /**
      * @var ColumnValue[]
@@ -41,6 +38,21 @@ abstract class EntityAbstract
     }
 
     abstract public static function getEntityTableDefault(): Table;
+
+    public function getConnection(): Connection
+    {
+        return $this->connection;
+    }
+
+    public function getEntityTable(): Table
+    {
+        return $this->entity_table;
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
 
     public function setFieldValue(
         Column|string $column,
@@ -263,7 +275,8 @@ abstract class EntityAbstract
 
     protected static function addToCache(self $item): void
     {
-        self::$cache[$item->connection->getConnectionId()][static::class][$item->entity_table->getFullName()][$item->id]
+        $connection_id = $item->connection->getConnectionId();
+        self::$cache[$connection_id][static::class][$item->entity_table->getFullName()][$item->getId()]
             = $item;
     }
 

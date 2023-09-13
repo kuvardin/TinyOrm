@@ -39,7 +39,7 @@ class ColumnValue
         }
 
         if ($this->value instanceof EntityAbstract) {
-            return $this->value->id;
+            return (string)$this->value->getId();
         }
 
         if ($this->value instanceof ExpressionAbstract) {

@@ -50,7 +50,7 @@ class Condition extends ConditionAbstract
 
     public function getQueryString(Parameters $parameters): string
     {
-        $value = $this->value instanceof EntityAbstract ? $this->value->id : $this->value;
+        $value = $this->value instanceof EntityAbstract ? $this->value->getId() : $this->value;
 
         $result = null;
         $column_name = $this->column->getFullName();
