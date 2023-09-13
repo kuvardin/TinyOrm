@@ -83,10 +83,10 @@ abstract class EntityAbstract
         return $this;
     }
 
-    public function saveChanges(): self
+    public function saveChanges(bool $apply_to_current_object = true, array &$new_entity_data = null): self
     {
         if ($this->unsaved_changes !== []) {
-            $data = $this->connection
+            $new_entity_data = $this->connection
                 ->getQueryBuilder()
                 ->createUpdateQuery($this->entity_table)
                 ->setValues($this->unsaved_changes)
@@ -96,7 +96,10 @@ abstract class EntityAbstract
             ;
 
             $this->unsaved_changes = [];
-            $this->__construct($this->connection, $this->entity_table, $data);
+
+            if ($apply_to_current_object) {
+                $this->__construct($this->connection, $this->entity_table, $new_entity_data);
+            }
         }
 
         return $this;
