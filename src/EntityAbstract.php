@@ -57,7 +57,9 @@ abstract class EntityAbstract
         }
 
         if ($force || $current_value instanceof ExpressionAbstract || $current_value !== $new_value) {
-            $this->unsaved_changes[$column->name] = new ColumnValue($column, $new_value, $type);
+            $this->unsaved_changes[$column->name] = $new_value instanceof ColumnValue
+                ? $new_value
+                : new ColumnValue($column, $new_value, $type);
         }
 
         return $this;

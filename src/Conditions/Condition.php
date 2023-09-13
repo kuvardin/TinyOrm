@@ -8,6 +8,7 @@ use Kuvardin\TinyOrm\Column;
 use Kuvardin\TinyOrm\EntityAbstract;
 use Kuvardin\TinyOrm\Enums\LogicalOperator;
 use Kuvardin\TinyOrm\Enums\Operator;
+use Kuvardin\TinyOrm\Expressions\ExpressionAbstract;
 use Kuvardin\TinyOrm\Parameters;
 use Kuvardin\TinyOrm\SpecialValues\IsNull;
 use Kuvardin\TinyOrm\SpecialValues\NotNull;
@@ -52,27 +53,30 @@ class Condition extends ConditionAbstract
         $value = $this->value instanceof EntityAbstract ? $this->value->id : $this->value;
 
         $result = null;
+        $column_name = $this->column->getFullName();
 
         if ($this->operator === Operator::Equals) {
             if ($value instanceof IsNull) {
-                $result = "{$this->column->getFullName()} IS NULL";
+                $result = "{$column_name} IS NULL";
             } elseif ($value instanceof NotNull) {
-                $result = "{$this->column->getFullName()} IS NOT NULL";
+                $result = "{$column_name} IS NOT NULL";
             }
         } elseif ($this->operator === Operator::NotEquals) {
             if ($value instanceof IsNull) {
-                $result = "{$this->column->getFullName()} IS NOT NULL";
+                $result = "{$column_name} IS NOT NULL";
             } elseif ($value instanceof NotNull) {
-                $result = "{$this->column->getFullName()} IS NULL";
+                $result = "{$column_name} IS NULL";
             }
         }
 
         if ($result === null) {
             if ($value instanceof Column) {
-                $result = "{$this->column->getFullName()} {$this->operator->value} {$value->getFullName()}";
+                $result = "{$column_name} {$this->operator->value} {$value->getFullName()}";
+            } elseif ($value instanceof ExpressionAbstract) {
+                $result = "{$column_name} {$this->operator->value} {$value->getQueryString($parameters)}";
             } else {
                 $parameter = $parameters->pushValue($value, $this->pdo_param_type);
-                $result = "{$this->column->getFullName()} {$this->operator->value} $parameter";
+                $result = "{$column_name} {$this->operator->value} $parameter";
             }
         }
 
