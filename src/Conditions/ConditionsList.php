@@ -57,6 +57,8 @@ class ConditionsList extends ConditionAbstract
 
             if ($value instanceof ConditionAbstract) {
                 $result->append($value);
+            } elseif ($value instanceof ExpressionAbstract) {
+                $result->appendExpression($value);
             } else {
                 $result->append(
                     new Condition(
