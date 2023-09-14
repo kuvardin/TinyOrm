@@ -25,7 +25,7 @@ enum Operator: string
                 return false;
             }
         } elseif ($value) {
-
+            // TODO
         }
     }
 }

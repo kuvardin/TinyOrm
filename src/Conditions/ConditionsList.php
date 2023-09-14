@@ -6,6 +6,7 @@ namespace Kuvardin\TinyOrm\Conditions;
 
 use Kuvardin\TinyOrm\Enums\LogicalOperator;
 use Kuvardin\TinyOrm\Enums\Operator;
+use Kuvardin\TinyOrm\Expressions\ExpressionAbstract;
 use Kuvardin\TinyOrm\Parameters;
 use RuntimeException;
 
@@ -75,6 +76,23 @@ class ConditionsList extends ConditionAbstract
     public function append(ConditionAbstract $item): self
     {
         $this->items[] = $item;
+        return $this;
+    }
+
+    public function appendExpression(
+        ExpressionAbstract $expression,
+        LogicalOperator $prefix = null,
+        bool $invert = null,
+    ): self
+    {
+        $this->append(
+            new ConditionExpression(
+                expression: $expression,
+                prefix: $prefix,
+                invert: $invert,
+            ),
+        );
+
         return $this;
     }
 
