@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Kuvardin\TinyOrm\Queries;
 
-use Kuvardin\TinyOrm\Column;
 use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
 use Kuvardin\TinyOrm\Connection;
 use Kuvardin\TinyOrm\FinalQuery;

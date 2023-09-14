@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Kuvardin\TinyOrm\Queries;
 
-use Kuvardin\TinyOrm\EntityAbstract;
 use Kuvardin\TinyOrm\FinalQuery;
 use Kuvardin\TinyOrm\Parameters;
 use Kuvardin\TinyOrm\Connection;
