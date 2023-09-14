@@ -31,6 +31,9 @@ class ConditionsList extends ConditionAbstract
         }
     }
 
+    /**
+     * Null values will be ignored
+     */
     public static function fromValuesArray(
         array $values_array,
         LogicalOperator $prefix = LogicalOperator::And,
@@ -43,6 +46,10 @@ class ConditionsList extends ConditionAbstract
         );
 
         foreach ($values_array as $column => $value) {
+            if ($value === null) {
+                continue;
+            }
+
             $result->append(
                 new Condition(
                     column: $column,

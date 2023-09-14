@@ -20,7 +20,7 @@ class ExpressionBuilder
     {
         return new UnaryOperation($operand, $prefix, $postfix);
     }
-    
+
     public function sum(mixed $operand_first, mixed $operand_second): BinaryOperation
     {
         return new BinaryOperation($operand_first, $operand_second, '+');
@@ -116,6 +116,26 @@ class ExpressionBuilder
         return new BinaryOperation($operand_first, $operand_second, '<>');
     }
 
+    public function in(mixed $operand_first, mixed $operand_second): BinaryOperation
+    {
+        return new BinaryOperation($operand_first, $operand_second, 'IN');
+    }
+
+    public function notIn(mixed $operand_first, mixed $operand_second): BinaryOperation
+    {
+        return new BinaryOperation($operand_first, $operand_second, 'NOT IN');
+    }
+
+    public function like(mixed $operand_first, mixed $operand_second): BinaryOperation
+    {
+        return new BinaryOperation($operand_first, $operand_second, 'like');
+    }
+
+    public function ilike(mixed $operand_first, mixed $operand_second): BinaryOperation
+    {
+        return new BinaryOperation($operand_first, $operand_second, 'ilike');
+    }
+
     public function squareRoot(mixed $operand): UnaryOperation
     {
         return new UnaryOperation($operand, '|/');
@@ -149,6 +169,14 @@ class ExpressionBuilder
 
         if (is_float($operand)) {
             return $parameters->pushValue($operand);
+        }
+
+        if (is_string($operand)) {
+            return $parameters->pushValue($operand, PDO::PARAM_STR);
+        }
+
+        if (is_bool($operand)) {
+            return $parameters->pushValue($operand, PDO::PARAM_BOOL);
         }
 
         if ($operand instanceof ExpressionAbstract) {
