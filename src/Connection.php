@@ -79,8 +79,24 @@ class Connection extends PDO
         return $this->query_builder ??= new QueryBuilder($this);
     }
 
+    /**
+     * Alias for getQueryBuilder()
+     */
+    public function qb(): QueryBuilder
+    {
+        return $this->getQueryBuilder();
+    }
+
     public function getExpressionBuilder(): ExpressionBuilder
     {
         return $this->expression_builder ??= new ExpressionBuilder;
+    }
+
+    /**
+     * Alias for getExpressionBuilder()
+     */
+    public function expr(): ExpressionBuilder
+    {
+        return $this->getExpressionBuilder();
     }
 }
