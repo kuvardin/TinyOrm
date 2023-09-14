@@ -6,6 +6,10 @@ namespace Kuvardin\TinyOrm;
 
 use Kuvardin\TinyOrm\Values\ValuesSet;
 
+/**
+ * @package Kuvardin\TinyOrm
+ * @author Maxim Kuvardin <maxim@kuvard.in>
+ */
 class Table
 {
     public function __construct(

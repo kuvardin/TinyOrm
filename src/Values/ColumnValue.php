@@ -10,6 +10,10 @@ use Kuvardin\TinyOrm\Expressions\ExpressionAbstract;
 use Kuvardin\TinyOrm\Parameters;
 use RuntimeException;
 
+/**
+ * @package Kuvardin\TinyOrm
+ * @author Maxim Kuvardin <maxim@kuvard.in>
+ */
 class ColumnValue
 {
     readonly public Column $column;

@@ -9,6 +9,10 @@ use Kuvardin\TinyOrm\Enums\Operator;
 use Kuvardin\TinyOrm\Parameters;
 use RuntimeException;
 
+/**
+ * @package Kuvardin\TinyOrm
+ * @author Maxim Kuvardin <maxim@kuvard.in>
+ */
 class ConditionsList extends ConditionAbstract
 {
     /**

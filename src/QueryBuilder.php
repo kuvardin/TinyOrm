@@ -9,6 +9,10 @@ use Kuvardin\TinyOrm\Queries\Insert;
 use Kuvardin\TinyOrm\Queries\Select;
 use Kuvardin\TinyOrm\Queries\Update;
 
+/**
+ * @package Kuvardin\TinyOrm
+ * @author Maxim Kuvardin <maxim@kuvard.in>
+ */
 class QueryBuilder
 {
     public function __construct(

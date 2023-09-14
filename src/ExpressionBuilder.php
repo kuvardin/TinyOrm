@@ -10,6 +10,10 @@ use RuntimeException;
 use Kuvardin\TinyOrm\Expressions\BinaryOperation;
 use Kuvardin\TinyOrm\Expressions\UnaryOperation;
 
+/**
+ * @package Kuvardin\TinyOrm
+ * @author Maxim Kuvardin <maxim@kuvard.in>
+ */
 class ExpressionBuilder
 {
     public function binaryOperation(mixed $operand_first, mixed $operand_second, string $operator): BinaryOperation

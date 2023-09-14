@@ -17,6 +17,10 @@ use RuntimeException;
 /**
  * @link https://www.postgresql.org/docs/current/sql-insert.html
  */
+/**
+ * @package Kuvardin\TinyOrm
+ * @author Maxim Kuvardin <maxim@kuvard.in>
+ */
 class Insert extends QueryAbstract
 {
     /**

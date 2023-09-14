@@ -6,6 +6,10 @@ namespace Kuvardin\TinyOrm;
 
 use RuntimeException;
 
+/**
+ * @package Kuvardin\TinyOrm
+ * @author Maxim Kuvardin <maxim@kuvard.in>
+ */
 class Column
 {
     public function __construct(

@@ -16,6 +16,10 @@ use Kuvardin\TinyOrm\Values\ColumnValue;
 use Kuvardin\TinyOrm\Values\ValuesSet;
 use RuntimeException;
 
+/**
+ * @package Kuvardin\TinyOrm
+ * @author Maxim Kuvardin <maxim@kuvard.in>
+ */
 class Update extends QueryAbstract
 {
     use QueryConditionsListTrait;

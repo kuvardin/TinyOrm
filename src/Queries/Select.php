@@ -17,6 +17,10 @@ use Kuvardin\TinyOrm\Traits\QueryConditionsListTrait;
 /**
  * @link https://www.postgresql.org/docs/current/sql-select.html
  */
+/**
+ * @package Kuvardin\TinyOrm
+ * @author Maxim Kuvardin <maxim@kuvard.in>
+ */
 class Select extends QueryAbstract
 {
     use QueryConditionsListTrait;

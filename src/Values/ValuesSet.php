@@ -8,6 +8,10 @@ use Kuvardin\TinyOrm\Column;
 use Kuvardin\TinyOrm\Table;
 use RuntimeException;
 
+/**
+ * @package Kuvardin\TinyOrm
+ * @author Maxim Kuvardin <maxim@kuvard.in>
+ */
 class ValuesSet
 {
     /**

@@ -9,6 +9,10 @@ use PDOStatement;
 use RuntimeException;
 use PDO;
 
+/**
+ * @package Kuvardin\TinyOrm
+ * @author Maxim Kuvardin <maxim@kuvard.in>
+ */
 class Parameters
 {
     /**

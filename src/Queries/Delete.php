@@ -15,6 +15,10 @@ use Kuvardin\TinyOrm\Traits\QueryConditionsListTrait;
 /**
  * @link https://www.postgresql.org/docs/current/sql-delete.html
  */
+/**
+ * @package Kuvardin\TinyOrm
+ * @author Maxim Kuvardin <maxim@kuvard.in>
+ */
 class Delete extends QueryAbstract
 {
     use QueryConditionsListTrait;

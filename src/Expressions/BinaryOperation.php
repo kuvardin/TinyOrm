@@ -8,6 +8,10 @@ use Kuvardin\TinyOrm\Column;
 use Kuvardin\TinyOrm\ExpressionBuilder;
 use Kuvardin\TinyOrm\Parameters;
 
+/**
+ * @package Kuvardin\TinyOrm
+ * @author Maxim Kuvardin <maxim@kuvard.in>
+ */
 class BinaryOperation extends ExpressionAbstract
 {
     public function __construct(

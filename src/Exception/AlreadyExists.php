@@ -6,6 +6,10 @@ namespace Kuvardin\TinyOrm\Exception;
 
 use PDOException;
 
+/**
+ * @package Kuvardin\TinyOrm
+ * @author Maxim Kuvardin <maxim@kuvard.in>
+ */
 class AlreadyExists extends PDOException
 {
 

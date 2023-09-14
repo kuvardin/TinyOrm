@@ -13,6 +13,10 @@ use Kuvardin\TinyOrm\Parameters;
 use Kuvardin\TinyOrm\SpecialValues\IsNull;
 use Kuvardin\TinyOrm\SpecialValues\NotNull;
 
+/**
+ * @package Kuvardin\TinyOrm
+ * @author Maxim Kuvardin <maxim@kuvard.in>
+ */
 class Condition extends ConditionAbstract
 {
     public Column|string $column;

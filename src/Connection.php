@@ -9,6 +9,10 @@ use PDOException;
 use PDOStatement;
 use RuntimeException;
 
+/**
+ * @package Kuvardin\TinyOrm
+ * @author Maxim Kuvardin <maxim@kuvard.in>
+ */
 class Connection extends PDO
 {
     protected ?QueryBuilder $query_builder = null;
