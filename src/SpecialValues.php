@@ -21,6 +21,15 @@ class SpecialValues
         return new SpecialValues\NotNull;
     }
 
+    public static function nullOrNotNull(?bool $is_null): SpecialValues\IsNull|SpecialValues\NotNull|null
+    {
+        if ($is_null !== null) {
+            return $is_null ? self::isNull() : self::notNull();
+        }
+
+        return null;
+    }
+
     public static function setDefault(): SpecialValues\SetDefault
     {
         return new SpecialValues\SetDefault;

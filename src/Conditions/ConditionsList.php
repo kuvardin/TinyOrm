@@ -50,14 +50,19 @@ class ConditionsList extends ConditionAbstract
                 continue;
             }
 
-            $result->append(
-                new Condition(
-                    column: $column,
-                    value: $value,
-                    operator: Operator::Equals,
-                    prefix: LogicalOperator::And,
-                ),
-            );
+            if ($value instanceof ConditionAbstract) {
+                $result->append($value);
+            } else {
+                $result->append(
+                    new Condition(
+                        column: $column,
+                        value: $value,
+                        operator: Operator::Equals,
+                        prefix: LogicalOperator::And,
+                    ),
+                );
+            }
+
         }
 
         return $result;
