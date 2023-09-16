@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Kuvardin\TinyOrm;
 
+use Kuvardin\TinyOrm\Expressions\ExpressionAbstract;
 use RuntimeException;
 
 /**
  * @package Kuvardin\TinyOrm
  * @author Maxim Kuvardin <maxim@kuvard.in>
  */
-class Column
+class Column extends ExpressionAbstract
 {
     public function __construct(
         readonly public string $name,
@@ -20,6 +21,11 @@ class Column
         if (!self::validateName($this->name)) {
             throw new RuntimeException("Incorrect column name: $this->name");
         }
+    }
+
+    public function getQueryString(Parameters $parameters): string
+    {
+        return '"' . $this->getFullName() . '"';
     }
 
     public static function validateName(string $name_part): bool

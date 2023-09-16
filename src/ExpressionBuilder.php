@@ -16,6 +16,11 @@ use Kuvardin\TinyOrm\Expressions\UnaryOperation;
  */
 class ExpressionBuilder
 {
+    public function column(string $name, Table $table = null): Column
+    {
+        return new Column($name, $table);
+    }
+
     public function binaryOperation(mixed $operand_first, mixed $operand_second, string $operator): BinaryOperation
     {
         return new BinaryOperation($operand_first, $operand_second, $operator);

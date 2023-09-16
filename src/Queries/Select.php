@@ -9,8 +9,10 @@ use Kuvardin\TinyOrm\FinalQuery;
 use Kuvardin\TinyOrm\Parameters;
 use Kuvardin\TinyOrm\Connection;
 use Kuvardin\TinyOrm\QueryAbstract;
+use Kuvardin\TinyOrm\Sorting;
 use Kuvardin\TinyOrm\Table;
 use Kuvardin\TinyOrm\Traits\QueryConditionsListTrait;
+use RuntimeException;
 
 /**
  * @link https://www.postgresql.org/docs/current/sql-select.html
@@ -24,24 +26,21 @@ class Select extends QueryAbstract
     use QueryConditionsListTrait;
 
     /**
-     * @param Connection $connection
-     * @param Table|null $table
-     * @param array|null $select_expressions_sql
-     * @param ConditionAbstract|null $condition_item
-     * @param int|null $limit
-     * @param int|null $offset
+     * @param Sorting[] $sortings
      */
     public function __construct(
         Connection $connection,
         public ?Table $table = null,
         public ?array $select_expressions_sql = null,
         ?ConditionAbstract $condition_item = null,
+        protected array $sortings = [],
         public ?int $limit = null,
         public ?int $offset = null,
     )
     {
         parent::__construct($connection);
         $this->where($condition_item);
+        $this->setSortings($this->sortings);
     }
 
     public function from(Table $table): self
@@ -56,6 +55,29 @@ class Select extends QueryAbstract
     public function selectExpressionsSql(?array $select_expressions_sql): self
     {
         $this->select_expressions_sql = $select_expressions_sql;
+        return $this;
+    }
+
+    /**
+     * @param Sorting[] $sortings
+     */
+    public function setSortings(array $sortings): self
+    {
+        $this->sortings = [];
+        foreach ($sortings as $sorting) {
+            if (!($sorting instanceof Sorting)) {
+                throw new RuntimeException('Wrong sorting settings type:' . gettype($sorting));
+            }
+
+            $this->sortings[] = $sortings;
+        }
+
+        return $this;
+    }
+
+    public function addSorting(Sorting $sorting): self
+    {
+        $this->sortings[] = $sorting;
         return $this;
     }
 
@@ -79,6 +101,11 @@ class Select extends QueryAbstract
 
         if (!$this->conditions->isEmpty()) {
             $result .= ' WHERE ' . $this->conditions->getQueryString($parameters);
+        }
+
+        if ($this->sortings !== []) {
+            $orders = array_map(static fn(Sorting $sorting) => $sorting->getQueryString($parameters), $this->sortings);
+            $result .= ' ORDER BY ' . implode(', ', $orders);
         }
 
         if ($this->limit !== null) {
