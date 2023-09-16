@@ -7,6 +7,10 @@ namespace Kuvardin\TinyOrm\Conditions;
 use Kuvardin\TinyOrm\Enums\LogicalOperator;
 use Kuvardin\TinyOrm\Parameters;
 
+/**
+ * @package Kuvardin\TinyOrm
+ * @author Maxim Kuvardin <maxim@kuvard.in>
+ */
 abstract class ConditionAbstract
 {
     public LogicalOperator $prefix = LogicalOperator::And;

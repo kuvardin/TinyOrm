@@ -6,6 +6,10 @@ namespace Kuvardin\TinyOrm\Expressions;
 
 use Kuvardin\TinyOrm\Parameters;
 
+/**
+ * @package Kuvardin\TinyOrm
+ * @author Maxim Kuvardin <maxim@kuvard.in>
+ */
 class ExpressionSql extends ExpressionAbstract
 {
     public function __construct(

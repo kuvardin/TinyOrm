@@ -15,11 +15,9 @@ use Kuvardin\TinyOrm\Traits\QueryConditionsListTrait;
 use RuntimeException;
 
 /**
- * @link https://www.postgresql.org/docs/current/sql-select.html
- */
-/**
  * @package Kuvardin\TinyOrm
  * @author Maxim Kuvardin <maxim@kuvard.in>
+ * @link https://www.postgresql.org/docs/current/sql-select.html
  */
 class Select extends QueryAbstract
 {

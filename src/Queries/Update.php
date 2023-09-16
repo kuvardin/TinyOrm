@@ -18,6 +18,7 @@ use RuntimeException;
 /**
  * @package Kuvardin\TinyOrm
  * @author Maxim Kuvardin <maxim@kuvard.in>
+ * @link https://www.postgresql.org/docs/current/sql-update.html
  */
 class Update extends QueryAbstract
 {

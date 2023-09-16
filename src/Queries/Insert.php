@@ -14,11 +14,9 @@ use Kuvardin\TinyOrm\Values\ValuesSet;
 use RuntimeException;
 
 /**
- * @link https://www.postgresql.org/docs/current/sql-insert.html
- */
-/**
  * @package Kuvardin\TinyOrm
  * @author Maxim Kuvardin <maxim@kuvard.in>
+ * @link https://www.postgresql.org/docs/current/sql-insert.html
  */
 class Insert extends QueryAbstract
 {

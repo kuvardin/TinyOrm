@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Kuvardin\TinyOrm;
 
+use Kuvardin\TinyOrm\Enums\RuleForSavingChanges;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -18,6 +19,8 @@ class Connection extends PDO
     protected ?QueryBuilder $query_builder = null;
     protected ?ExpressionBuilder $expression_builder = null;
     private ?string $connection_id = null;
+
+    public RuleForSavingChanges $rule_for_saving_changes = RuleForSavingChanges::ThrowExceptionInDestructor;
 
     /**
      * @var string[]

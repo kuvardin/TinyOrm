@@ -13,11 +13,9 @@ use Kuvardin\TinyOrm\Table;
 use Kuvardin\TinyOrm\Traits\QueryConditionsListTrait;
 
 /**
- * @link https://www.postgresql.org/docs/current/sql-delete.html
- */
-/**
  * @package Kuvardin\TinyOrm
  * @author Maxim Kuvardin <maxim@kuvard.in>
+ * @link https://www.postgresql.org/docs/current/sql-delete.html
  */
 class Delete extends QueryAbstract
 {

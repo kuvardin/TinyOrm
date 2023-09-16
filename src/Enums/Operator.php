@@ -7,6 +7,10 @@ namespace Kuvardin\TinyOrm\Enums;
 use Kuvardin\TinyOrm\SpecialValues\IsNull;
 use Kuvardin\TinyOrm\SpecialValues\NotNull;
 
+/**
+ * @package Kuvardin\TinyOrm
+ * @author Maxim Kuvardin <maxim@kuvard.in>
+ */
 enum Operator: string
 {
     case Equals = '=';

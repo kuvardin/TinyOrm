@@ -7,6 +7,10 @@ namespace Kuvardin\TinyOrm;
 use PDOException;
 use PDOStatement;
 
+/**
+ * @package Kuvardin\TinyOrm
+ * @author Maxim Kuvardin <maxim@kuvard.in>
+ */
 abstract class QueryAbstract
 {
     protected Connection $connection;

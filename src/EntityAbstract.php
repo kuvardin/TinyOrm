@@ -6,12 +6,17 @@ namespace Kuvardin\TinyOrm;
 
 use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
 use Kuvardin\TinyOrm\Conditions\ConditionsList;
+use Kuvardin\TinyOrm\Enums\RuleForSavingChanges;
 use Kuvardin\TinyOrm\Expressions\ExpressionAbstract;
 use Kuvardin\TinyOrm\Values\ColumnValue;
 use Kuvardin\TinyOrm\Values\ValuesSet;
 use PDOException;
 use RuntimeException;
 
+/**
+ * @package Kuvardin\TinyOrm
+ * @author Maxim Kuvardin <maxim@kuvard.in>
+ */
 abstract class EntityAbstract
 {
     public const COL_ID = 'id';
@@ -291,5 +296,32 @@ abstract class EntityAbstract
     public static function clearCache(Connection $connection): void
     {
         self::$cache[$connection->getConnectionId()][static::class] = [];
+    }
+
+    public function __destruct()
+    {
+        if ($this->unsaved_changes !== []) {
+            switch ($this->connection->rule_for_saving_changes) {
+                case RuleForSavingChanges::ThrowExceptionInDestructor:
+                    throw new RuntimeException(
+                        sprintf(
+                            'Entity %s with ID %d has unsaved changes',
+                            static::class,
+                            $this->id
+                        ),
+                    );
+
+                case RuleForSavingChanges::SaveInDestructor:
+                    $this->saveChanges(false);
+                    break;
+
+                case RuleForSavingChanges::DoNothing:
+                    // Nothing
+                    break;
+
+                default:
+                    throw new RuntimeException('Unknown rule for saving changes');
+            }
+        }
     }
 }

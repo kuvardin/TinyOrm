@@ -8,8 +8,9 @@ namespace Kuvardin\TinyOrm\Enums;
  * @package Kuvardin\TinyOrm
  * @author Maxim Kuvardin <maxim@kuvard.in>
  */
-enum SortDirection: string
+enum RuleForSavingChanges
 {
-    case Asc = 'ASC';
-    case Desc = 'DESC';
+    case ThrowExceptionInDestructor;
+    case SaveInDestructor;
+    case DoNothing;
 }

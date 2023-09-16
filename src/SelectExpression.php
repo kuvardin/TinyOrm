@@ -7,6 +7,10 @@ namespace Kuvardin\TinyOrm;
 use Kuvardin\TinyOrm\Expressions\ExpressionAbstract;
 use RuntimeException;
 
+/**
+ * @package Kuvardin\TinyOrm
+ * @author Maxim Kuvardin <maxim@kuvard.in>
+ */
 class SelectExpression
 {
     private function __construct(

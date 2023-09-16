@@ -7,6 +7,10 @@ namespace Kuvardin\TinyOrm;
 use Kuvardin\TinyOrm\Enums\SortDirection;
 use Kuvardin\TinyOrm\Expressions\ExpressionAbstract;
 
+/**
+ * @package Kuvardin\TinyOrm
+ * @author Maxim Kuvardin <maxim@kuvard.in>
+ */
 class Sorting
 {
     public function __construct(
