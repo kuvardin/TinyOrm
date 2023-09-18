@@ -8,11 +8,10 @@ use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
 use Kuvardin\TinyOrm\FinalQuery;
 use Kuvardin\TinyOrm\Parameters;
 use Kuvardin\TinyOrm\Connection;
-use Kuvardin\TinyOrm\QueryAbstract;
-use Kuvardin\TinyOrm\Sorting;
+use Kuvardin\TinyOrm\SelectExpression;
+use Kuvardin\TinyOrm\Sorting\SortingSettings;
 use Kuvardin\TinyOrm\Table;
 use Kuvardin\TinyOrm\Traits\QueryConditionsListTrait;
-use RuntimeException;
 
 /**
  * @package Kuvardin\TinyOrm
@@ -23,69 +22,58 @@ class Select extends QueryAbstract
 {
     use QueryConditionsListTrait;
 
-    /**
-     * @param Sorting[] $sortings
-     */
     public function __construct(
         Connection $connection,
         public ?Table $table = null,
-        public ?array $select_expressions_sql = null,
+        protected array $select_expressions = [],
         ?ConditionAbstract $condition_item = null,
-        protected array $sortings = [],
+        public ?SortingSettings $sorting_settings = null,
         public ?int $limit = null,
         public ?int $offset = null,
     )
     {
         parent::__construct($connection);
         $this->where($condition_item);
-        $this->setSortings($this->sortings);
     }
 
-    public function from(Table $table): self
+    public function setTable(Table $table): self
     {
         $this->table = $table;
         return $this;
     }
 
     /**
-     * @param string[]|null $select_expressions_sql
+     * @return SelectExpression[]
      */
-    public function selectExpressionsSql(?array $select_expressions_sql): self
+    public function getSelectExpressions(): array
     {
-        $this->select_expressions_sql = $select_expressions_sql;
-        return $this;
+        return $this->select_expressions;
     }
 
-    /**
-     * @param Sorting[] $sortings
-     */
-    public function setSortings(array $sortings): self
+    public function setSelectExpressions(array $select_expressions): self
     {
-        $this->sortings = [];
-        foreach ($sortings as $sorting) {
-            if (!($sorting instanceof Sorting)) {
-                throw new RuntimeException('Wrong sorting settings type:' . gettype($sorting));
-            }
+        $this->select_expressions = [];
 
-            $this->sortings[] = $sortings;
+        foreach ($select_expressions as $select_expression) {
+            $this->appendSelectExpression($select_expression);
         }
 
         return $this;
     }
 
-    public function addSorting(Sorting $sorting): self
+    public function appendSelectExpression(SelectExpression $select_expression): self
     {
-        $this->sortings[] = $sorting;
+        $this->select_expressions[] = $select_expression;
         return $this;
     }
 
-    public function limit(?int $limit): self
+    public function setLimit(?int $limit): self
     {
         $this->limit = $limit;
         return $this;
     }
 
-    public function offset(?int $offset): self
+    public function setOffset(?int $offset): self
     {
         $this->offset = $offset;
         return $this;
@@ -94,16 +82,29 @@ class Select extends QueryAbstract
     public function getFinalQuery(Parameters $parameters = null): FinalQuery
     {
         $parameters ??= new Parameters;
-        $expression = empty($this->select_expressions_sql) ? '*' : implode(', ', $this->select_expressions_sql);
-        $result = "SELECT $expression FROM \"{$this->table->getFullName()}\"";
+
+        if ($this->select_expressions === []) {
+            $select_expressions_query = '*';
+        } else {
+            $select_expressions_query = implode(
+                ', ',
+                array_map(
+                    static fn(SelectExpression $se) => $se->getQueryString($parameters),
+                    $this->select_expressions,
+                ),
+            );
+        }
+
+        $result = "SELECT $select_expressions_query";
+
+        $result .= " FROM \"{$this->table->getFullName()}\"";
 
         if (!$this->conditions->isEmpty()) {
             $result .= ' WHERE ' . $this->conditions->getQueryString($parameters);
         }
 
-        if ($this->sortings !== []) {
-            $orders = array_map(static fn(Sorting $sorting) => $sorting->getQueryString($parameters), $this->sortings);
-            $result .= ' ORDER BY ' . implode(', ', $orders);
+        if ($this->sorting_settings !== null && !$this->sorting_settings->isEmpty()) {
+            $result .= ' ORDER BY ' . $this->sorting_settings->getQueryString($parameters);
         }
 
         if ($this->limit !== null) {

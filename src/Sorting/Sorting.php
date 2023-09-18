@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Kuvardin\TinyOrm;
+namespace Kuvardin\TinyOrm\Sorting;
 
 use Kuvardin\TinyOrm\Enums\SortDirection;
 use Kuvardin\TinyOrm\Expressions\ExpressionAbstract;
+use Kuvardin\TinyOrm\Parameters;
 
 /**
  * @package Kuvardin\TinyOrm

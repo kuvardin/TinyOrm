@@ -150,9 +150,9 @@ abstract class EntityAbstract
         $result = $connection
             ->getQueryBuilder()
             ->createSelectQuery()
-            ->from($table)
+            ->setTable($table)
             ->where($conditions)
-            ->limit(1)
+            ->setLimit(1)
             ->execute()
             ->fetch()
         ;
@@ -190,14 +190,14 @@ abstract class EntityAbstract
             ->getQueryBuilder()
             ->createSelectQuery()
             ->selectExpressionsSql(["COUNT(*)"])
-            ->from($table);
+            ->setTable($table);
 
         if ($conditions !== null) {
             $qb->where($conditions);
         }
 
         $result = $qb
-            ->limit(1)
+            ->setLimit(1)
             ->execute()
             ->fetchColumn()
         ;
@@ -217,14 +217,14 @@ abstract class EntityAbstract
             ->getQueryBuilder()
             ->createSelectQuery()
             ->selectExpressionsSql(["COUNT(*)"])
-            ->from($table);
+            ->setTable($table);
 
         if ($conditions !== null) {
             $qb->where($conditions);
         }
 
         $result = $qb
-            ->limit(1)
+            ->setLimit(1)
             ->execute()
             ->fetchColumn()
         ;

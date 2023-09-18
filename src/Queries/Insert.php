@@ -7,7 +7,6 @@ namespace Kuvardin\TinyOrm\Queries;
 use Kuvardin\TinyOrm\FinalQuery;
 use Kuvardin\TinyOrm\Parameters;
 use Kuvardin\TinyOrm\Connection;
-use Kuvardin\TinyOrm\QueryAbstract;
 use Kuvardin\TinyOrm\Table;
 use Kuvardin\TinyOrm\Values\ColumnValue;
 use Kuvardin\TinyOrm\Values\ValuesSet;

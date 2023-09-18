@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Kuvardin\TinyOrm;
+namespace Kuvardin\TinyOrm\Queries;
 
+use Kuvardin\TinyOrm\Connection;
+use Kuvardin\TinyOrm\FinalQuery;
+use Kuvardin\TinyOrm\Parameters;
 use PDOException;
 use PDOStatement;
 

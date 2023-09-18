@@ -8,7 +8,6 @@ use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
 use Kuvardin\TinyOrm\FinalQuery;
 use Kuvardin\TinyOrm\Connection;
 use Kuvardin\TinyOrm\Parameters;
-use Kuvardin\TinyOrm\QueryAbstract;
 use Kuvardin\TinyOrm\Table;
 use Kuvardin\TinyOrm\Traits\QueryConditionsListTrait;
 

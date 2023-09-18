@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kuvardin\TinyOrm;
 
 use Kuvardin\TinyOrm\Expressions\ExpressionAbstract;
+use Kuvardin\TinyOrm\Expressions\ExpressionSql;
 use PDO;
 use RuntimeException;
 use Kuvardin\TinyOrm\Expressions\BinaryOperation;
@@ -16,6 +17,11 @@ use Kuvardin\TinyOrm\Expressions\UnaryOperation;
  */
 class ExpressionBuilder
 {
+    public function sql(string $sql): ExpressionSql
+    {
+        return new ExpressionSql($sql);
+    }
+
     public function column(string $name, Table $table = null): Column
     {
         return new Column($name, $table);
