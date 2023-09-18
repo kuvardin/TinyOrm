@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Kuvardin\TinyOrm;
 
+use Generator;
 use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
 use Kuvardin\TinyOrm\Conditions\ConditionsList;
 use Kuvardin\TinyOrm\Enums\RuleForSavingChanges;
 use Kuvardin\TinyOrm\Expressions\ExpressionAbstract;
+use Kuvardin\TinyOrm\Sorting\SortingSettings;
 use Kuvardin\TinyOrm\Values\ColumnValue;
 use Kuvardin\TinyOrm\Values\ValuesSet;
 use PDOException;
@@ -189,7 +191,11 @@ abstract class EntityAbstract
         $qb = $connection
             ->getQueryBuilder()
             ->createSelectQuery()
-            ->selectExpressionsSql(["COUNT(*)"])
+            ->setSelectExpressions([
+                SelectExpression::expression(
+                    $connection->expr()->sql("COUNT(*)"),
+                ),
+            ])
             ->setTable($table);
 
         if ($conditions !== null) {
@@ -216,7 +222,11 @@ abstract class EntityAbstract
         $qb = $connection
             ->getQueryBuilder()
             ->createSelectQuery()
-            ->selectExpressionsSql(["COUNT(*)"])
+            ->setSelectExpressions([
+                SelectExpression::expression(
+                    $connection->expr()->sql("COUNT(*)"),
+                ),
+            ])
             ->setTable($table);
 
         if ($conditions !== null) {
@@ -298,6 +308,33 @@ abstract class EntityAbstract
         self::$cache[$connection->getConnectionId()][static::class] = [];
     }
 
+    public function findByConditions(
+        Connection $connection,
+        ConditionAbstract $conditions = null,
+        SortingSettings $sorting_settings = null,
+        int $limit = null,
+        int $offset = null,
+        Table $table = null,
+    ): Generator
+    {
+        $table ??= static::getEntityTableDefault();
+        $qb = $connection
+            ->getQueryBuilder()
+            ->createSelectQuery($table)
+            ->setLimit($limit)
+            ->setOffset($offset)
+        ;
+
+        if ($conditions !== null) {
+            $qb->where($conditions);
+        }
+
+        $stmt = $qb->execute();
+        while ($row_data = $stmt->fetch()) {
+            yield new static($connection, $table, $row_data);
+        }
+    }
+
     public function __destruct()
     {
         if ($this->unsaved_changes !== []) {
@@ -316,7 +353,7 @@ abstract class EntityAbstract
                     break;
 
                 case RuleForSavingChanges::DoNothing:
-                    // Nothing
+                    // Doing nothing ;)
                     break;
 
                 default:

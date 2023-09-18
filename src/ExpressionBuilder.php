@@ -22,6 +22,11 @@ class ExpressionBuilder
         return new ExpressionSql($sql);
     }
 
+    public function count(mixed $operand_first): UnaryOperation
+    {
+        return new UnaryOperation($operand_first, 'COUNT(', ')');
+    }
+
     public function column(string $name, Table $table = null): Column
     {
         return new Column($name, $table);
