@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kuvardin\TinyOrm\Queries;
 
 use Kuvardin\TinyOrm\Connection;
+use Kuvardin\TinyOrm\Exception\AlreadyExists;
 use Kuvardin\TinyOrm\FinalQuery;
 use Kuvardin\TinyOrm\Parameters;
 use PDOException;
@@ -27,6 +28,7 @@ abstract class QueryAbstract
 
     /**
      * @throws PDOException
+     * @throws AlreadyExists
      */
     final public function execute(Parameters $parameters = null): PDOStatement
     {

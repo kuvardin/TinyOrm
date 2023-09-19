@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kuvardin\TinyOrm;
 
 use Kuvardin\TinyOrm\Enums\RuleForSavingChanges;
+use Kuvardin\TinyOrm\Exception\AlreadyExists;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -65,6 +66,7 @@ class Connection extends PDO
 
     /**
      * @throws PDOException
+     * @throws AlreadyExists
      */
     public function executeFinalQuery(FinalQuery $query): PDOStatement
     {
@@ -77,7 +79,23 @@ class Connection extends PDO
             $query->parameters->bind($stmt);
         }
 
-        $stmt->execute();
+        try {
+            $stmt->execute();
+        } catch (PDOException $pdo_exception) {
+            if ($pdo_exception->getCode() === 23505) {
+                $already_exists = new AlreadyExists(
+                    $pdo_exception->getMessage(),
+                    $pdo_exception->getCode(),
+                    $pdo_exception->getPrevious()
+                );
+
+                $already_exists->errorInfo = $pdo_exception->errorInfo;
+                throw $already_exists;
+            }
+
+            throw $pdo_exception;
+        }
+
         return $stmt;
     }
 
