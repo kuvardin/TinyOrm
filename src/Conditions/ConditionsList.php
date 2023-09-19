@@ -101,7 +101,7 @@ class ConditionsList extends ConditionAbstract
     public function getQueryString(Parameters $parameters): string
     {
         if ($this->items === []) {
-            return '1';
+            return 'True';
         }
 
         $result_parts = [];
