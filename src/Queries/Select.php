@@ -97,7 +97,7 @@ class Select extends QueryAbstract
 
         $result = "SELECT $select_expressions_query";
 
-        $result .= " FROM \"{$this->table->getFullName()}\"";
+        $result .= " FROM {$this->table->getFullName(true)}";
 
         if (!$this->conditions->isEmpty()) {
             $result .= ' WHERE ' . $this->conditions->getQueryString($parameters);

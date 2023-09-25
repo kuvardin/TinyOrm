@@ -26,9 +26,10 @@ class Table
             && ($this->schema === null || $another_table->schema === null || $this->schema === $another_table->schema);
     }
     
-    public function getFullName(): string
+    public function getFullName(bool $with_quotes = false): string
     {
-        return ($this->schema === null ? '' : "{$this->schema}.") . $this->name;
+        $q = $with_quotes ? '"' : '';
+        return ($this->schema === null ? '' : "$q{$this->schema}$q.") . "$q{$this->name}$q";
     }
 
     public function getColumn(string $column_name): Column

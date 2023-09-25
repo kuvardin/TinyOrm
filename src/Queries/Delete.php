@@ -54,8 +54,8 @@ class Delete extends QueryAbstract
     {
         $parameters ??= new Parameters;
         $result = $this->only
-            ? "DELETE FROM ONLY {$this->table->getFullName()}"
-            : "DELETE FROM {$this->table->getFullName()}";
+            ? "DELETE FROM ONLY {$this->table->getFullName(true)}"
+            : "DELETE FROM {$this->table->getFullName(true)}";
 
         if (!$this->conditions->isEmpty()) {
             $result .= ' WHERE ' . $this->conditions->getQueryString($parameters);
