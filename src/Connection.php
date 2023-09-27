@@ -82,10 +82,10 @@ class Connection extends PDO
         try {
             $stmt->execute();
         } catch (PDOException $pdo_exception) {
-            if ($pdo_exception->getCode() === 23505) {
+            if ($pdo_exception->getCode() == '23505') {
                 $already_exists = new AlreadyExists(
                     $pdo_exception->getMessage(),
-                    $pdo_exception->getCode(),
+                    (int)$pdo_exception->getCode(),
                     $pdo_exception->getPrevious()
                 );
 

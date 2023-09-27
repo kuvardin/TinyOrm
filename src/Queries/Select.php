@@ -79,6 +79,12 @@ class Select extends QueryAbstract
         return $this;
     }
 
+    public function setSortingSettings(?SortingSettings $sorting_settings): self
+    {
+        $this->sorting_settings = $sorting_settings;
+        return $this;
+    }
+
     public function getFinalQuery(Parameters $parameters = null): FinalQuery
     {
         $parameters ??= new Parameters;

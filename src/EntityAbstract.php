@@ -323,6 +323,7 @@ abstract class EntityAbstract
             ->createSelectQuery($table)
             ->setLimit($limit)
             ->setOffset($offset)
+            ->setSortingSettings($sorting_settings)
         ;
 
         if ($conditions !== null) {
