@@ -17,6 +17,8 @@ use RuntimeException;
  */
 class Connection extends PDO
 {
+    private static ?self $connection_default = null;
+
     /**
      * @var string[]
      */
@@ -67,6 +69,25 @@ class Connection extends PDO
         }
 
         return $this->connection_id;
+    }
+
+    public static function getConnectionDefault(): ?self
+    {
+        return self::$connection_default;
+    }
+
+    public static function requireConnectionDefault(): self
+    {
+        if (self::$connection_default === null) {
+            throw new RuntimeException('PDO connection default instance was not set');
+        }
+
+        return self::$connection_default;
+    }
+
+    public static function setConnectionDefault(?self $connection_default): void
+    {
+        self::$connection_default = $connection_default;
     }
 
     /**

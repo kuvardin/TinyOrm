@@ -8,6 +8,7 @@ use Generator;
 use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
 use Kuvardin\TinyOrm\Conditions\ConditionsList;
 use Kuvardin\TinyOrm\Enums\RuleForSavingChanges;
+use Kuvardin\TinyOrm\Exception\AlreadyExists;
 use Kuvardin\TinyOrm\Expressions\ExpressionAbstract;
 use Kuvardin\TinyOrm\Sorting\SortingSettings;
 use Kuvardin\TinyOrm\Values\ColumnValue;
@@ -49,7 +50,11 @@ abstract class EntityAbstract
     /**
      * @throws PDOException
      */
-    public static function createByValuesSet(Connection $connection, ValuesSet $values_set, Table $table = null): static
+    public static function createByValuesSet(
+        ValuesSet $values_set,
+        Connection $connection = null,
+        Table $table = null,
+    ): static
     {
         $table ??= static::getEntityTableDefault();
 
@@ -57,6 +62,7 @@ abstract class EntityAbstract
             throw new RuntimeException("Wrong values set table: {$values_set->table->getFullName()}");
         }
 
+        $connection ??= Connection::requireConnectionDefault();
         $data = $connection
             ->getQueryBuilder()
             ->createInsertQuery($table)
@@ -71,41 +77,44 @@ abstract class EntityAbstract
         return $result;
     }
 
-    public static function createByValuesArray(Connection $connection, array $values_array, Table $table = null): static
+    public static function createByValuesArray(
+        array $values_array,
+        Connection $connection = null,
+        Table $table = null,
+    ): static
     {
-        $table ??= static::getEntityTableDefault();
-        return self::createByValuesSet($connection, new ValuesSet($table, $values_array), $table);
+        return self::createByValuesSet(new ValuesSet($table, $values_array), $connection, $table);
     }
 
     public static function findOneByConditions(
-        Connection $connection,
         ConditionAbstract $conditions,
         SortingSettings $sorting_settings = null,
+        Connection $connection = null,
         Table $table = null,
     ): ?static
     {
         $data = self::findOneRawDataByConditions(
-            connection: $connection,
             conditions: $conditions,
             sorting_settings: $sorting_settings,
+            connection: $connection,
             table: $table,
         );
 
-        return $data === null ? null : self::upsertInCache($connection, $data, $table);
+        return $data === null ? null : self::upsertInCache($data, $connection, $table);
     }
 
     protected static function findOneRawDataByConditions(
-        Connection $connection,
         ConditionAbstract $conditions,
         SortingSettings $sorting_settings = null,
+        Connection $connection = null,
         Table $table = null,
     ): ?array
     {
         $generator = self::findRawDataByConditions(
-            connection: $connection,
             conditions: $conditions,
             sorting_settings: $sorting_settings,
             limit: 1,
+            connection: $connection,
             table: $table,
         );
 
@@ -113,12 +122,12 @@ abstract class EntityAbstract
     }
 
     public static function requireOneByConditions(
-        Connection $connection,
         ConditionAbstract $conditions,
+        Connection $connection = null,
         Table $table = null,
     ): static
     {
-        $result = self::findOneByConditions($connection, $conditions, $table);
+        $result = self::findOneByConditions($conditions, $connection, $table);
         if ($result === null) {
             throw new RuntimeException('Table row not found');
         }
@@ -127,11 +136,12 @@ abstract class EntityAbstract
     }
 
     public static function checkExistsByConditions(
-        Connection $connection,
         ConditionAbstract $conditions = null,
+        Connection $connection = null,
         Table $table = null,
     ): bool
     {
+        $connection ??= Connection::requireConnectionDefault();
         $table ??= static::getEntityTableDefault();
 
         $qb = $connection
@@ -158,11 +168,12 @@ abstract class EntityAbstract
     }
 
     public static function countByConditions(
-        Connection $connection,
         ConditionAbstract $conditions = null,
+        Connection $connection = null,
         Table $table = null,
     ): int
     {
+        $connection ??= Connection::requireConnectionDefault();
         $table ??= static::getEntityTableDefault();
 
         $qb = $connection
@@ -189,13 +200,13 @@ abstract class EntityAbstract
     }
 
     public static function requireOneById(
-        Connection $connection,
         int $id,
+        Connection $connection = null,
         Table $table = null,
         bool $use_cache = true,
     ): static
     {
-        $result = self::findOneById($connection, $id, $table, $use_cache);
+        $result = self::findOneById($id, $connection, $table, $use_cache);
         if ($result === null) {
             throw new RuntimeException("Table row not found by id: $id");
         }
@@ -204,29 +215,34 @@ abstract class EntityAbstract
     }
 
     public static function findOneById(
-        Connection $connection,
         int $id,
+        Connection $connection = null,
         Table $table = null,
         bool $use_cache = true,
     ): ?static
     {
         $table ??= static::getEntityTableDefault();
 
-        if ($use_cache && ($item = self::findOneFromCacheById($connection, $id, $table))) {
+        if ($use_cache && ($item = self::findOneFromCacheById($id, $connection, $table))) {
             return $item;
         }
 
         return self::findOneByConditions(
-            connection: $connection,
             conditions: ConditionsList::fromValuesArray([
                 EntityAbstract::COL_ID => $id,
             ]),
+            connection: $connection,
             table: $table,
         );
     }
 
-    protected static function findOneFromCacheById(Connection $connection, int $id, Table $table = null): ?static
+    protected static function findOneFromCacheById(
+        int $id,
+        Connection $connection = null,
+        Table $table = null,
+    ): ?static
     {
+        $connection ??= Connection::requireConnectionDefault();
         $table ??= static::getEntityTableDefault();
         return self::$cache[$connection->getConnectionId()][static::class][$table->getFullName()][$id] ?? null;
     }
@@ -239,13 +255,15 @@ abstract class EntityAbstract
     }
 
     protected static function upsertInCache(
-        Connection $connection,
         array $data,
+        Connection $connection = null,
         Table $table = null,
         bool $add_to_cache = true,
     ): static
     {
-        $result = self::findOneFromCacheById($connection, $data[self::COL_ID], $table);
+        $connection ??= Connection::requireConnectionDefault();
+
+        $result = self::findOneFromCacheById($data[self::COL_ID], $connection, $table);
         if ($result !== null) {
             $result->refreshData($data);
             return $result;
@@ -271,46 +289,51 @@ abstract class EntityAbstract
         self::$cache = [];
     }
 
-    public static function clearCache(Connection $connection): void
+    public static function clearCache(Connection $connection = null): void
     {
+        $connection ??= Connection::requireConnectionDefault();
         self::$cache[$connection->getConnectionId()][static::class] = [];
     }
 
     public static function findByConditions(
-        Connection $connection,
         ConditionAbstract $conditions = null,
         SortingSettings $sorting_settings = null,
         int $limit = null,
         int $offset = null,
+        Connection $connection = null,
         Table $table = null,
     ): Generator
     {
+        $connection ??= Connection::requireConnectionDefault();
+
         $generator = self::findRawDataByConditions(
-            connection: $connection,
             conditions: $conditions,
             sorting_settings: $sorting_settings,
             limit: $limit,
             offset: $offset,
+            connection: $connection,
             table: $table,
         );
 
         if ($generator->valid()) {
             foreach ($generator as $raw_data) {
-                yield self::upsertInCache($connection, $raw_data, $table);
+                yield self::upsertInCache($raw_data, $connection, $table);
             }
         }
     }
 
     protected static function findRawDataByConditions(
-        Connection $connection,
         ConditionAbstract $conditions = null,
         SortingSettings $sorting_settings = null,
         int $limit = null,
         int $offset = null,
+        Connection $connection = null,
         Table $table = null,
     ): Generator
     {
+        $connection ??= Connection::requireConnectionDefault();
         $table ??= static::getEntityTableDefault();
+
         $qb = $connection
             ->getQueryBuilder()
             ->createSelectQuery($table)
@@ -335,10 +358,10 @@ abstract class EntityAbstract
     public function refreshData(array $data = null): bool
     {
         $data ??= self::findOneRawDataByConditions(
-            connection: $this->connection,
             conditions: ConditionsList::fromValuesArray([
                 EntityAbstract::COL_ID => $this->id,
             ]),
+            connection: $this->connection,
             table: $this->entity_table,
         );
 
@@ -371,8 +394,20 @@ abstract class EntityAbstract
         mixed $new_value,
         int $type = null,
         bool $force = false,
+        bool $strict = true,
     ): self
     {
+        if (
+            $strict
+            && $current_value !== null
+            && $new_value !== null
+            && gettype($current_value) !== gettype($new_value)
+        ) {
+            throw new RuntimeException(
+                sprintf('Wrong new value type: %s (must be %s)', gettype($new_value), gettype($current_value)),
+            );
+        }
+
         if (is_string($column)) {
             $column = $this->entity_table->getColumn($column);
         } elseif ($column->table !== null && !$this->entity_table->isEquals($column->table)) {
@@ -394,6 +429,10 @@ abstract class EntityAbstract
         return $this;
     }
 
+    /**
+     * @throws AlreadyExists
+     * @throws PDOException
+     */
     public function saveChanges(bool $apply_to_current_object = true, array &$new_entity_data = null): self
     {
         if ($this->unsaved_changes !== []) {

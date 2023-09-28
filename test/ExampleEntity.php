@@ -36,31 +36,31 @@ class ExampleEntity extends EntityAbstract
     }
 
     public static function create(
-        Connection $connection,
         string $code,
         string $title,
         string $description,
         int $counter,
+        Connection $connection = null,
         Table $table = null,
     ): self
     {
         return self::createByValuesArray(
-            connection: $connection,
             values_array: [
                 self::COL_CODE => $code,
                 self::COL_TITLE => $title,
                 self::COL_DESCRIPTION => $description,
                 self::COL_COUNTER => $counter,
             ],
+            connection: $connection,
             table: $table,
         );
     }
 
-    public static function findOneByCode(Connection $connection, string $code, Table $table = null): ?self
+    public static function findOneByCode(string $code, Connection $connection, Table $table = null): ?self
     {
         return self::findOneByConditions(
-            connection: $connection,
             conditions: new ConditionExpression($connection->expr()->equal(self::COL_CODE, $code)),
+            connection: $connection,
             table: $table,
         );
     }
