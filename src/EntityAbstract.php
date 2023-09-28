@@ -379,7 +379,7 @@ abstract class EntityAbstract
             throw new RuntimeException("Wrong column table: {$column->table->getFullName()}");
         }
 
-        if ($force || $current_value instanceof ExpressionAbstract || $current_value !== $new_value) {
+        if ($force || $new_value instanceof ExpressionAbstract || $current_value !== $new_value) {
             if ($new_value instanceof ColumnValue) {
                 if (!$column->isEquals($new_value->column)) {
                     throw new RuntimeException("Unexpected column: {$new_value->column} (must be $column)");

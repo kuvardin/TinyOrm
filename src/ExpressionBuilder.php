@@ -204,7 +204,7 @@ class ExpressionBuilder
         }
 
         if ($operand instanceof Column) {
-            return $operand->getFullName();
+            return $operand->getFullName(true);
         }
 
         throw new RuntimeException('Unexpected operand type: ' . gettype($operand));

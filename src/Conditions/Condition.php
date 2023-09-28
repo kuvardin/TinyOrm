@@ -57,7 +57,7 @@ class Condition extends ConditionAbstract
         $value = $this->value instanceof EntityAbstract ? $this->value->getId() : $this->value;
 
         $result = null;
-        $column_name = $this->column->getFullName();
+        $column_name = $this->column->getFullName(true);
 
         if ($this->operator === Operator::Equals) {
             if ($value instanceof IsNull) {
@@ -75,7 +75,7 @@ class Condition extends ConditionAbstract
 
         if ($result === null) {
             if ($value instanceof Column) {
-                $result = "{$column_name} {$this->operator->value} {$value->getFullName()}";
+                $result = "{$column_name} {$this->operator->value} {$value->getFullName(true)}";
             } elseif ($value instanceof ExpressionAbstract) {
                 $result = "{$column_name} {$this->operator->value} {$value->getQueryString($parameters)}";
             } else {

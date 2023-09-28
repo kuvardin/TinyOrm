@@ -25,7 +25,7 @@ class Column extends ExpressionAbstract
 
     public function getQueryString(Parameters $parameters): string
     {
-        return '"' . $this->getFullName() . '"';
+        return $this->getFullName(true);
     }
 
     public static function validateName(string $name_part): bool
@@ -43,9 +43,10 @@ class Column extends ExpressionAbstract
             );
     }
 
-    public function getFullName(): string
+    public function getFullName(bool $with_quotes = false): string
     {
-        return $this->table === null ? $this->name : "{$this->table->getFullName()}.{$this->name}";
+        $q = $with_quotes ? '"' : '';
+        return $this->table === null ? $this->name : "{$this->table->getFullName(true)}.$q{$this->name}$q";
     }
 
     public function __toString(): string
