@@ -31,6 +31,7 @@ class Connection extends PDO
     public bool $remove_entity_from_cache_on_destructor = false;
 
     public ?string $last_query = null;
+    public ?array $last_query_parameters = null;
 
     public static function create(
         string $adapter,
@@ -84,6 +85,7 @@ class Connection extends PDO
         }
 
         $this->last_query = $stmt->queryString;
+        $this->last_query_parameters = $query->parameters?->toArray() ?? [];
 
         try {
             $stmt->execute();
