@@ -30,6 +30,8 @@ class Connection extends PDO
     public RuleForSavingChanges $rule_for_saving_changes = RuleForSavingChanges::ThrowExceptionInDestructor;
     public bool $remove_entity_from_cache_on_destructor = false;
 
+    public ?string $last_query = null;
+
     public static function create(
         string $adapter,
         string $host,
@@ -80,6 +82,8 @@ class Connection extends PDO
         if ($query->parameters !== null && !$query->parameters->isEmpty()) {
             $query->parameters->bind($stmt);
         }
+
+        $this->last_query = $stmt->queryString;
 
         try {
             $stmt->execute();
