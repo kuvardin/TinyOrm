@@ -46,72 +46,6 @@ abstract class EntityAbstract
 
     abstract public static function getEntityTableDefault(): Table;
 
-    public function getConnection(): Connection
-    {
-        return $this->connection;
-    }
-
-    public function getEntityTable(): Table
-    {
-        return $this->entity_table;
-    }
-
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    public function setFieldValue(
-        Column|string $column,
-        mixed &$current_value,
-        mixed $new_value,
-        int $type = null,
-        bool $force = false,
-    ): self
-    {
-        if (is_string($column)) {
-            $column = $this->entity_table->getColumn($column);
-        } elseif ($column->table !== null && !$this->entity_table->isEquals($column->table)) {
-            throw new RuntimeException("Wrong column table: {$column->table->getFullName()}");
-        }
-
-        if ($force || $current_value instanceof ExpressionAbstract || $current_value !== $new_value) {
-            if ($new_value instanceof ColumnValue) {
-                if (!$column->isEquals($new_value->column)) {
-                    throw new RuntimeException("Unexpected column: {$new_value->column} (must be $column)");
-                }
-
-                $this->unsaved_changes[$column->name] = $new_value;
-            } else {
-                $this->unsaved_changes[$column->name] = new ColumnValue($column, $new_value, $type);
-            }
-        }
-
-        return $this;
-    }
-
-    public function saveChanges(bool $apply_to_current_object = true, array &$new_entity_data = null): self
-    {
-        if ($this->unsaved_changes !== []) {
-            $new_entity_data = $this->connection
-                ->getQueryBuilder()
-                ->createUpdateQuery($this->entity_table)
-                ->setValues($this->unsaved_changes)
-                ->setOutputExpression('*')
-                ->execute()
-                ->fetch()
-            ;
-
-            $this->unsaved_changes = [];
-
-            if ($apply_to_current_object) {
-                $this->__construct($this->connection, $this->entity_table, $new_entity_data);
-            }
-        }
-
-        return $this;
-    }
-
     /**
      * @throws PDOException
      */
@@ -144,26 +78,36 @@ abstract class EntityAbstract
     public static function findOneByConditions(
         Connection $connection,
         ConditionAbstract $conditions,
+        SortingSettings $sorting_settings = null,
         Table $table = null,
     ): ?static
     {
-        $table ??= static::getEntityTableDefault();
+        $data = self::findOneRawDataByConditions(
+            connection: $connection,
+            conditions: $conditions,
+            sorting_settings: $sorting_settings,
+            table: $table,
+        );
 
-        $result = $connection
-            ->getQueryBuilder()
-            ->createSelectQuery()
-            ->setTable($table)
-            ->where($conditions)
-            ->setLimit(1)
-            ->execute()
-            ->fetch()
-        ;
+        return $data === null ? null : new static($connection, $table, $data);
+    }
 
-        if ($result === false) {
-            return null;
-        }
+    public static function findOneRawDataByConditions(
+        Connection $connection,
+        ConditionAbstract $conditions,
+        SortingSettings $sorting_settings = null,
+        Table $table = null,
+    ): ?array
+    {
+        $generator = self::findRawDataByConditions(
+            connection: $connection,
+            conditions: $conditions,
+            sorting_settings: $sorting_settings,
+            limit: 1,
+            table: $table,
+        );
 
-        return new static($connection, $table, $result);
+        return $generator->valid() ? $generator->current() : null;
     }
 
     public static function requireOneByConditions(
@@ -266,7 +210,7 @@ abstract class EntityAbstract
     {
         $table ??= static::getEntityTableDefault();
 
-        if ($use_cache && ($item = self::getFromCacheById($connection, $id, $table))) {
+        if ($use_cache && ($item = self::findOneFromCacheById($connection, $id, $table))) {
             return $item;
         }
 
@@ -285,7 +229,7 @@ abstract class EntityAbstract
         return $result;
     }
 
-    protected static function getFromCacheById(Connection $connection, int $id, Table $table = null): ?static
+    protected static function findOneFromCacheById(Connection $connection, int $id, Table $table = null): ?static
     {
         $table ??= static::getEntityTableDefault();
         return self::$cache[$connection->getConnectionId()][static::class][$table->getFullName()][$id] ?? null;
@@ -308,7 +252,32 @@ abstract class EntityAbstract
         self::$cache[$connection->getConnectionId()][static::class] = [];
     }
 
-    public function findByConditions(
+    public static function findByConditions(
+        Connection $connection,
+        ConditionAbstract $conditions = null,
+        SortingSettings $sorting_settings = null,
+        int $limit = null,
+        int $offset = null,
+        Table $table = null,
+    ): Generator
+    {
+        $generator = self::findRawDataByConditions(
+            connection: $connection,
+            conditions: $conditions,
+            sorting_settings: $sorting_settings,
+            limit: $limit,
+            offset: $offset,
+            table: $table,
+        );
+
+        if ($generator->valid()) {
+            foreach ($generator as $row_data) {
+                yield new static($connection, $table, $row_data);
+            }
+        }
+    }
+
+    public static function findRawDataByConditions(
         Connection $connection,
         ConditionAbstract $conditions = null,
         SortingSettings $sorting_settings = null,
@@ -332,8 +301,96 @@ abstract class EntityAbstract
 
         $stmt = $qb->execute();
         while ($row_data = $stmt->fetch()) {
+            yield $stmt->fetch();
             yield new static($connection, $table, $row_data);
         }
+    }
+
+    /**
+     * False is row was not found in database
+     */
+    public function refreshData(array $data = null): bool
+    {
+        $data ??= self::findOneRawDataByConditions(
+            connection: $this->connection,
+            conditions: ConditionsList::fromValuesArray([
+                EntityAbstract::COL_ID => $this->id,
+            ]),
+            table: $this->entity_table,
+        );
+
+        if ($data !== null) {
+            $this->__construct($this->connection, $this->entity_table, $data);
+            return true;
+        }
+
+        return false;
+    }
+
+    public function getConnection(): Connection
+    {
+        return $this->connection;
+    }
+
+    public function getEntityTable(): Table
+    {
+        return $this->entity_table;
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setFieldValue(
+        Column|string $column,
+        mixed &$current_value,
+        mixed $new_value,
+        int $type = null,
+        bool $force = false,
+    ): self
+    {
+        if (is_string($column)) {
+            $column = $this->entity_table->getColumn($column);
+        } elseif ($column->table !== null && !$this->entity_table->isEquals($column->table)) {
+            throw new RuntimeException("Wrong column table: {$column->table->getFullName()}");
+        }
+
+        if ($force || $current_value instanceof ExpressionAbstract || $current_value !== $new_value) {
+            if ($new_value instanceof ColumnValue) {
+                if (!$column->isEquals($new_value->column)) {
+                    throw new RuntimeException("Unexpected column: {$new_value->column} (must be $column)");
+                }
+
+                $this->unsaved_changes[$column->name] = $new_value;
+            } else {
+                $this->unsaved_changes[$column->name] = new ColumnValue($column, $new_value, $type);
+            }
+        }
+
+        return $this;
+    }
+
+    public function saveChanges(bool $apply_to_current_object = true, array &$new_entity_data = null): self
+    {
+        if ($this->unsaved_changes !== []) {
+            $new_entity_data = $this->connection
+                ->getQueryBuilder()
+                ->createUpdateQuery($this->entity_table)
+                ->setValues($this->unsaved_changes)
+                ->setOutputExpression('*')
+                ->execute()
+                ->fetch()
+            ;
+
+            $this->unsaved_changes = [];
+
+            if ($apply_to_current_object) {
+                $this->refreshData($new_entity_data);
+            }
+        }
+
+        return $this;
     }
 
     public function __destruct()
