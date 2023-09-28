@@ -51,7 +51,7 @@ abstract class EntityAbstract
      * @throws PDOException
      */
     public static function createByValuesSet(
-        ValuesSet $values_set,
+        ValuesSet|array $values_set,
         Connection $connection = null,
         Table $table = null,
     ): static
@@ -67,7 +67,9 @@ abstract class EntityAbstract
             ->getQueryBuilder()
             ->createInsertQuery($table)
             ->setOutputExpression('*')
-            ->addValuesSet($values_set)
+            ->addValuesSet(
+                is_array($values_set) ? new ValuesSet($table, $values_set) : $values_set,
+            )
             ->execute()
             ->fetch()
         ;
@@ -77,24 +79,15 @@ abstract class EntityAbstract
         return $result;
     }
 
-    public static function createByValuesArray(
-        array $values_array,
-        Connection $connection = null,
-        Table $table = null,
-    ): static
-    {
-        return self::createByValuesSet(new ValuesSet($table, $values_array), $connection, $table);
-    }
-
     public static function findOneByConditions(
-        ConditionAbstract $conditions,
+        ConditionAbstract|array $conditions,
         SortingSettings $sorting_settings = null,
         Connection $connection = null,
         Table $table = null,
     ): ?static
     {
         $data = self::findOneRawDataByConditions(
-            conditions: $conditions,
+            conditions: is_array($conditions) ? ConditionsList::fromValuesArray($conditions) : $conditions,
             sorting_settings: $sorting_settings,
             connection: $connection,
             table: $table,
@@ -104,14 +97,14 @@ abstract class EntityAbstract
     }
 
     protected static function findOneRawDataByConditions(
-        ConditionAbstract $conditions,
+        ConditionAbstract|array $conditions,
         SortingSettings $sorting_settings = null,
         Connection $connection = null,
         Table $table = null,
     ): ?array
     {
         $generator = self::findRawDataByConditions(
-            conditions: $conditions,
+            conditions: is_array($conditions) ? ConditionsList::fromValuesArray($conditions) : $conditions,
             sorting_settings: $sorting_settings,
             limit: 1,
             connection: $connection,
@@ -122,12 +115,17 @@ abstract class EntityAbstract
     }
 
     public static function requireOneByConditions(
-        ConditionAbstract $conditions,
+        ConditionAbstract|array $conditions,
         Connection $connection = null,
         Table $table = null,
     ): static
     {
-        $result = self::findOneByConditions($conditions, $connection, $table);
+        $result = self::findOneByConditions(
+            conditions: is_array($conditions) ? ConditionsList::fromValuesArray($conditions) : $conditions,
+            connection: $connection,
+            table: $table,
+        );
+
         if ($result === null) {
             throw new RuntimeException('Table row not found');
         }
@@ -136,7 +134,7 @@ abstract class EntityAbstract
     }
 
     public static function checkExistsByConditions(
-        ConditionAbstract $conditions = null,
+        ConditionAbstract|array $conditions = null,
         Connection $connection = null,
         Table $table = null,
     ): bool
@@ -155,7 +153,9 @@ abstract class EntityAbstract
             ->setTable($table);
 
         if ($conditions !== null) {
-            $qb->where($conditions);
+            $qb->where(
+                is_array($conditions) ? ConditionsList::fromValuesArray($conditions) : $conditions,
+            );
         }
 
         $result = $qb
@@ -168,7 +168,7 @@ abstract class EntityAbstract
     }
 
     public static function countByConditions(
-        ConditionAbstract $conditions = null,
+        ConditionAbstract|array $conditions = null,
         Connection $connection = null,
         Table $table = null,
     ): int
@@ -187,7 +187,9 @@ abstract class EntityAbstract
             ->setTable($table);
 
         if ($conditions !== null) {
-            $qb->where($conditions);
+            $qb->where(
+                is_array($conditions) ? ConditionsList::fromValuesArray($conditions) : $conditions,
+            );
         }
 
         $result = $qb
@@ -228,9 +230,9 @@ abstract class EntityAbstract
         }
 
         return self::findOneByConditions(
-            conditions: ConditionsList::fromValuesArray([
+            conditions: [
                 EntityAbstract::COL_ID => $id,
-            ]),
+            ],
             connection: $connection,
             table: $table,
         );
@@ -296,7 +298,7 @@ abstract class EntityAbstract
     }
 
     public static function findByConditions(
-        ConditionAbstract $conditions = null,
+        ConditionAbstract|array $conditions = null,
         SortingSettings $sorting_settings = null,
         int $limit = null,
         int $offset = null,
@@ -307,7 +309,7 @@ abstract class EntityAbstract
         $connection ??= Connection::requireConnectionDefault();
 
         $generator = self::findRawDataByConditions(
-            conditions: $conditions,
+            conditions: is_array($conditions) ? ConditionsList::fromValuesArray($conditions) : $conditions,
             sorting_settings: $sorting_settings,
             limit: $limit,
             offset: $offset,
@@ -323,7 +325,7 @@ abstract class EntityAbstract
     }
 
     protected static function findRawDataByConditions(
-        ConditionAbstract $conditions = null,
+        ConditionAbstract|array $conditions = null,
         SortingSettings $sorting_settings = null,
         int $limit = null,
         int $offset = null,
@@ -343,7 +345,9 @@ abstract class EntityAbstract
         ;
 
         if ($conditions !== null) {
-            $qb->where($conditions);
+            $qb->where(
+                is_array($conditions) ? ConditionsList::fromValuesArray($conditions) : $conditions,
+            );
         }
 
         $stmt = $qb->execute();
@@ -358,9 +362,9 @@ abstract class EntityAbstract
     public function refreshData(array $data = null): bool
     {
         $data ??= self::findOneRawDataByConditions(
-            conditions: ConditionsList::fromValuesArray([
+            conditions: [
                 EntityAbstract::COL_ID => $this->id,
-            ]),
+            ],
             connection: $this->connection,
             table: $this->entity_table,
         );
