@@ -17,16 +17,18 @@ use RuntimeException;
  */
 class Connection extends PDO
 {
-    protected ?QueryBuilder $query_builder = null;
-    protected ?ExpressionBuilder $expression_builder = null;
-    private ?string $connection_id = null;
-
-    public RuleForSavingChanges $rule_for_saving_changes = RuleForSavingChanges::ThrowExceptionInDestructor;
-
     /**
      * @var string[]
      */
     private static array $connection_ids = [];
+
+    protected ?QueryBuilder $query_builder = null;
+    protected ?ExpressionBuilder $expression_builder = null;
+
+    private ?string $connection_id = null;
+
+    public RuleForSavingChanges $rule_for_saving_changes = RuleForSavingChanges::ThrowExceptionInDestructor;
+    public bool $remove_entity_from_cache_on_destructor = false;
 
     public static function create(
         string $adapter,

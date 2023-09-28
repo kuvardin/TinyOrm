@@ -66,7 +66,9 @@ abstract class EntityAbstract
             ->fetch()
         ;
 
-        return new static($connection, $table, $data);
+        $result = new static($connection, $table, $data);
+        static::addToCache($result);
+        return $result;
     }
 
     public static function createByValuesArray(Connection $connection, array $values_array, Table $table = null): static
@@ -89,10 +91,10 @@ abstract class EntityAbstract
             table: $table,
         );
 
-        return $data === null ? null : new static($connection, $table, $data);
+        return $data === null ? null : self::upsertInCache($connection, $data, $table);
     }
 
-    public static function findOneRawDataByConditions(
+    protected static function findOneRawDataByConditions(
         Connection $connection,
         ConditionAbstract $conditions,
         SortingSettings $sorting_settings = null,
@@ -214,19 +216,13 @@ abstract class EntityAbstract
             return $item;
         }
 
-        $result = self::findOneByConditions(
+        return self::findOneByConditions(
             connection: $connection,
             conditions: ConditionsList::fromValuesArray([
                 EntityAbstract::COL_ID => $id,
             ]),
             table: $table,
         );
-
-        if ($result !== null) {
-            self::addToCache($result);
-        }
-
-        return $result;
     }
 
     protected static function findOneFromCacheById(Connection $connection, int $id, Table $table = null): ?static
@@ -240,6 +236,34 @@ abstract class EntityAbstract
         $connection_id = $item->connection->getConnectionId();
         self::$cache[$connection_id][static::class][$item->entity_table->getFullName()][$item->getId()]
             = $item;
+    }
+
+    protected static function upsertInCache(
+        Connection $connection,
+        array $data,
+        Table $table = null,
+        bool $add_to_cache = true,
+    ): static
+    {
+        $result = self::findOneFromCacheById($connection, $data[self::COL_ID], $table);
+        if ($result !== null) {
+            $result->refreshData($data);
+            return $result;
+        }
+
+        $result = new static($connection, $table ?? static::getEntityTableDefault(), $data);
+
+        if ($add_to_cache) {
+            self::addToCache($result);
+        }
+
+        return $result;
+    }
+
+    public static function removeFromCache(self $item): void
+    {
+        $connection_id = $item->connection->getConnectionId();
+        unset(self::$cache[$connection_id][static::class][$item->entity_table->getFullName()][$item->getId()]);
     }
 
     public static function clearCacheFull(): void
@@ -271,13 +295,13 @@ abstract class EntityAbstract
         );
 
         if ($generator->valid()) {
-            foreach ($generator as $row_data) {
-                yield new static($connection, $table, $row_data);
+            foreach ($generator as $raw_data) {
+                yield self::upsertInCache($connection, $raw_data, $table);
             }
         }
     }
 
-    public static function findRawDataByConditions(
+    protected static function findRawDataByConditions(
         Connection $connection,
         ConditionAbstract $conditions = null,
         SortingSettings $sorting_settings = null,
@@ -300,9 +324,8 @@ abstract class EntityAbstract
         }
 
         $stmt = $qb->execute();
-        while ($row_data = $stmt->fetch()) {
-            yield $stmt->fetch();
-            yield new static($connection, $table, $row_data);
+        while ($raw_data = $stmt->fetch()) {
+            yield $raw_data;
         }
     }
 
@@ -417,6 +440,10 @@ abstract class EntityAbstract
                 default:
                     throw new RuntimeException('Unknown rule for saving changes');
             }
+        }
+
+        if ($this->connection->remove_entity_from_cache_on_destructor) {
+            static::removeFromCache($this);
         }
     }
 }
