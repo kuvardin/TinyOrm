@@ -58,7 +58,7 @@ abstract class EntityAbstract
     {
         $table ??= static::getEntityTableDefault();
 
-        if (!$table->isEquals($values_set->table)) {
+        if ($values_set instanceof ValuesSet && !$table->isEquals($values_set->table)) {
             throw new RuntimeException("Wrong values set table: {$values_set->table->getFullName()}");
         }
 
