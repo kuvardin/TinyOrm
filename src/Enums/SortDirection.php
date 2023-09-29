@@ -12,4 +12,9 @@ enum SortDirection: string
 {
     case Asc = 'ASC';
     case Desc = 'DESC';
+
+    public static function tryFromString(string $string): ?self
+    {
+        return self::tryFrom(strtoupper($string));
+    }
 }
