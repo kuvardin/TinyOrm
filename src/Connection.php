@@ -43,6 +43,7 @@ class Connection extends PDO
         string $username,
         string $password,
         array $options = null,
+        bool $is_default = false,
     ): self
     {
         $dsn = sprintf(
@@ -55,7 +56,12 @@ class Connection extends PDO
             $password,
         );
 
-        return new self($dsn, options: $options);
+        $result = new self($dsn, options: $options);
+        if ($is_default) {
+            self::setConnectionDefault($result);
+        }
+
+        return $result;
     }
 
     public function getConnectionId(): string
