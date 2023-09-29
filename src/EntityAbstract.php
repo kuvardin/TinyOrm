@@ -297,6 +297,9 @@ abstract class EntityAbstract
         self::$cache[$connection->getConnectionId()][static::class] = [];
     }
 
+    /**
+     * @return Generator|static[]
+     */
     public static function findByConditions(
         ConditionAbstract|array $conditions = null,
         SortingSettings $sorting_settings = null,
