@@ -12,7 +12,7 @@ trait QueryConditionsListTrait
 {
     public ConditionsList $conditions;
 
-    public function where(?ConditionAbstract $condition_item): self
+    public function setWhere(?ConditionAbstract $condition_item): self
     {
         $this->conditions = new ConditionsList($condition_item === null ? [] : [$condition_item]);
         return $this;

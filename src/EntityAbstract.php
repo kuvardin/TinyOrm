@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kuvardin\TinyOrm;
 
 use Generator;
+use Kuvardin\TinyOrm\Conditions\Condition;
 use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
 use Kuvardin\TinyOrm\Conditions\ConditionsList;
 use Kuvardin\TinyOrm\Enums\RuleForSavingChanges;
@@ -153,7 +154,7 @@ abstract class EntityAbstract
             ->setTable($table);
 
         if ($conditions !== null) {
-            $qb->where(
+            $qb->setWhere(
                 is_array($conditions) ? ConditionsList::fromValuesArray($conditions) : $conditions,
             );
         }
@@ -187,7 +188,7 @@ abstract class EntityAbstract
             ->setTable($table);
 
         if ($conditions !== null) {
-            $qb->where(
+            $qb->setWhere(
                 is_array($conditions) ? ConditionsList::fromValuesArray($conditions) : $conditions,
             );
         }
@@ -348,7 +349,7 @@ abstract class EntityAbstract
         ;
 
         if ($conditions !== null) {
-            $qb->where(
+            $qb->setWhere(
                 is_array($conditions) ? ConditionsList::fromValuesArray($conditions) : $conditions,
             );
         }
@@ -447,6 +448,7 @@ abstract class EntityAbstract
                 ->getQueryBuilder()
                 ->createUpdateQuery($this->entity_table)
                 ->setValues($this->unsaved_changes)
+                ->setWhere(new Condition(self::COL_ID, $this->id))
                 ->setOutputExpression('*')
                 ->execute()
                 ->fetch()

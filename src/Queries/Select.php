@@ -33,7 +33,7 @@ class Select extends QueryAbstract
     )
     {
         parent::__construct($connection);
-        $this->where($condition_item);
+        $this->setWhere($condition_item);
     }
 
     public function setTable(Table $table): self

@@ -29,7 +29,7 @@ class Delete extends QueryAbstract
     )
     {
         parent::__construct($connection);
-        $this->where($this->condition_abstract);
+        $this->setWhere($this->condition_abstract);
     }
 
     public function setTable(Table $table): self

@@ -35,7 +35,7 @@ class Update extends QueryAbstract
     )
     {
         parent::__construct($connection);
-        $this->where($condition_item);
+        $this->setWhere($condition_item);
         $this->setValuesSet($values_set);
     }
 
