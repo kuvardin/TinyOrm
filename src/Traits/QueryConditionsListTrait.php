@@ -36,7 +36,7 @@ trait QueryConditionsListTrait
     {
         $this->conditions->append(
             is_array($condition_item)
-                ? ConditionsList::fromValuesArray($condition_item)
+                ? ConditionsList::fromValuesArray($condition_item, LogicalOperator::Or)
                 : new ConditionsList([$condition_item], LogicalOperator::Or)
         );
 
