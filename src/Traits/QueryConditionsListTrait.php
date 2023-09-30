@@ -12,21 +12,34 @@ trait QueryConditionsListTrait
 {
     public ConditionsList $conditions;
 
-    public function setWhere(?ConditionAbstract $condition_item): self
+    public function setWhere(ConditionAbstract|array|null $condition_item): self
     {
-        $this->conditions = new ConditionsList($condition_item === null ? [] : [$condition_item]);
+        $this->conditions = is_array($condition_item)
+            ? ConditionsList::fromValuesArray($condition_item)
+            : new ConditionsList($condition_item === null ? [] : [$condition_item]);
+
         return $this;
     }
 
-    public function andWhere(ConditionAbstract $condition_item): self
+    public function andWhere(ConditionAbstract|array $condition_item): self
     {
-        $this->conditions->append(new ConditionsList([$condition_item], LogicalOperator::And));
+        $this->conditions->append(
+            is_array($condition_item)
+                ? ConditionsList::fromValuesArray($condition_item)
+                : new ConditionsList([$condition_item], LogicalOperator::And)
+        );
+
         return $this;
     }
 
-    public function orWhere(ConditionAbstract $condition_item): self
+    public function orWhere(ConditionAbstract|array $condition_item): self
     {
-        $this->conditions->append(new ConditionsList([$condition_item], LogicalOperator::Or));
+        $this->conditions->append(
+            is_array($condition_item)
+                ? ConditionsList::fromValuesArray($condition_item)
+                : new ConditionsList([$condition_item], LogicalOperator::Or)
+        );
+
         return $this;
     }
 }
