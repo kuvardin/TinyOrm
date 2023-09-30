@@ -434,6 +434,19 @@ abstract class EntityAbstract
             }
         }
 
+        if (
+            $new_value !== $current_value
+            && (
+                $new_value === null
+                || is_int($new_value)
+                || is_string($new_value)
+                || is_bool($new_value)
+                || is_float($new_value)
+            )
+        ) {
+            $current_value = $new_value;
+        }
+
         return $this;
     }
 
