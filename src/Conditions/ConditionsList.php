@@ -109,7 +109,7 @@ class ConditionsList extends ConditionAbstract
             $item_result = $result_parts === [] ? '' : "{$item->prefix->value} ";
             if ($item instanceof Condition) {
                 $item_result .= $item->getQueryString($parameters);
-            } elseif ($item instanceof ConditionsList) {
+            } elseif (($item instanceof ConditionsList) || ($item instanceof ConditionExpression)) {
                 $item_result .= '(' . $item->getQueryString($parameters) . ')';
             } else {
                 throw new RuntimeException('incorrect condition item type: ' . gettype($item));

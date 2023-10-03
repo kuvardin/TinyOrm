@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kuvardin\TinyOrm\Queries;
 
 use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
+use Kuvardin\TinyOrm\Expressions\ExpressionSql;
 use Kuvardin\TinyOrm\FinalQuery;
 use Kuvardin\TinyOrm\Parameters;
 use Kuvardin\TinyOrm\Connection;
@@ -83,6 +84,21 @@ class Select extends QueryAbstract
     {
         $this->sorting_settings = $sorting_settings;
         return $this;
+    }
+
+    public function count(): int
+    {
+        $select = new self(
+            connection: $this->connection,
+            table: $this->table,
+            select_expressions: [
+                SelectExpression::expression(new ExpressionSql('COUNT(*)')),
+            ],
+            condition_item: $this->conditions,
+        );
+
+        $result = $select->execute()->fetchColumn();
+        return $result === false ? 0 : $result;
     }
 
     public function getFinalQuery(Parameters $parameters = null): FinalQuery
