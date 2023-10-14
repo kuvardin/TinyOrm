@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kuvardin\TinyOrm;
 
 use Generator;
+use IntBackedEnum;
 use Kuvardin\TinyOrm\Conditions\Condition;
 use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
 use Kuvardin\TinyOrm\Conditions\ConditionsList;
@@ -16,6 +17,7 @@ use Kuvardin\TinyOrm\Values\ColumnValue;
 use Kuvardin\TinyOrm\Values\ValuesSet;
 use PDOException;
 use RuntimeException;
+use StringBackedEnum;
 
 /**
  * @package Kuvardin\TinyOrm
@@ -405,6 +407,15 @@ abstract class EntityAbstract
         bool $strict = true,
     ): self
     {
+        if ($new_value instanceof self) {
+            $new_value = $new_value->getId();
+        } elseif (
+            ($new_value instanceof StringBackedEnum)
+            || ($new_value instanceof IntBackedEnum)
+        ) {
+            $new_value = $new_value->value;
+        }
+
         if (
             $strict
             && $current_value !== null
