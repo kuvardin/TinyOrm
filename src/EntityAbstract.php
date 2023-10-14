@@ -416,10 +416,15 @@ abstract class EntityAbstract
             $new_value = $new_value->value;
         }
 
+        $new_value_is_scalar = is_int($new_value)
+            || is_string($new_value)
+            || is_bool($new_value)
+            || is_float($new_value);
+
         if (
             $strict
             && $current_value !== null
-            && $new_value !== null
+            && $new_value_is_scalar
             && gettype($current_value) !== gettype($new_value)
         ) {
             throw new RuntimeException(
@@ -447,13 +452,7 @@ abstract class EntityAbstract
 
         if (
             $new_value !== $current_value
-            && (
-                $new_value === null
-                || is_int($new_value)
-                || is_string($new_value)
-                || is_bool($new_value)
-                || is_float($new_value)
-            )
+            && ($new_value === null || $new_value_is_scalar)
         ) {
             $current_value = $new_value;
         }
