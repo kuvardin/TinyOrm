@@ -181,6 +181,16 @@ class ExpressionBuilder
         return new UnaryOperation($operand, '~');
     }
 
+    public function isNull(Column $operand): UnaryOperation
+    {
+        return new UnaryOperation($operand, postfix: 'IS NULL');
+    }
+
+    public function isNotNull(Column $operand): UnaryOperation
+    {
+        return new UnaryOperation($operand, postfix: 'IS NOT NULL');
+    }
+
     public static function getArithmeticOperandQueryString(mixed $operand, Parameters $parameters): string
     {
         if (is_int($operand)) {
