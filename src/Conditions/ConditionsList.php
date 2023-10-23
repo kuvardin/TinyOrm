@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Kuvardin\TinyOrm\Conditions;
 
+use Kuvardin\TinyOrm\Column;
 use Kuvardin\TinyOrm\Enums\LogicalOperator;
 use Kuvardin\TinyOrm\Enums\Operator;
+use Kuvardin\TinyOrm\Expressions\BinaryOperation;
 use Kuvardin\TinyOrm\Expressions\ExpressionAbstract;
 use Kuvardin\TinyOrm\Parameters;
 use RuntimeException;
@@ -58,7 +60,13 @@ class ConditionsList extends ConditionAbstract
             if ($value instanceof ConditionAbstract) {
                 $result->append($value);
             } elseif ($value instanceof ExpressionAbstract) {
-                $result->appendExpression($value);
+                if (is_string($column)) {
+                    $result->appendExpression(
+                        new BinaryOperation(new Column($column), $value, Operator::Equals->value),
+                    );
+                } else {
+                    $result->appendExpression($value);
+                }
             } else {
                 $result->append(
                     new Condition(

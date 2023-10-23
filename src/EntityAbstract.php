@@ -52,6 +52,7 @@ abstract class EntityAbstract
 
     /**
      * @throws PDOException
+     * @throws AlreadyExists
      */
     public static function createByValuesSet(
         ValuesSet|array $values_set,

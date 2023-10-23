@@ -34,6 +34,20 @@ class Condition extends ConditionAbstract
         parent::__construct($prefix, $invert);
     }
 
+    public static function nullOrNotNull(
+        Column|string $column,
+        bool|null $is_null,
+        LogicalOperator $prefix = null,
+        bool $invert = null,
+    ): ?self
+    {
+        if ($is_null !== null) {
+            return new self($column, $is_null ? new IsNull : new NotNull(), prefix: $prefix, invert: $invert);
+        }
+
+        return null;
+    }
+
     public static function isNull(
         Column|string $column,
         LogicalOperator $prefix = null,
