@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kuvardin\TinyOrm\Expressions;
 
 use Kuvardin\TinyOrm\Column;
+use Kuvardin\TinyOrm\EntityAbstract;
 use Kuvardin\TinyOrm\ExpressionBuilder;
 use Kuvardin\TinyOrm\Parameters;
 
@@ -15,7 +16,7 @@ use Kuvardin\TinyOrm\Parameters;
 class UnaryOperation extends ExpressionAbstract
 {
     public function __construct(
-        readonly public Column|ExpressionAbstract|int|float $operand,
+        readonly public mixed $operand,
         readonly ?string $prefix = null,
         readonly ?string $postfix = null,
     )
