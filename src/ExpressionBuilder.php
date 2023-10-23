@@ -199,6 +199,10 @@ class ExpressionBuilder
             return $parameters->pushValue($operand, PDO::PARAM_BOOL);
         }
 
+        if ($operand instanceof EntityAbstract) {
+            return $parameters->pushValue($operand->getId(), PDO::PARAM_INT);
+        }
+
         if ($operand instanceof ExpressionAbstract) {
             return '(' . $operand->getQueryString($parameters) . ')';
         }
