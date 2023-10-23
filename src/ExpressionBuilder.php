@@ -213,12 +213,12 @@ class ExpressionBuilder
             return $parameters->pushValue($operand->getId(), PDO::PARAM_INT);
         }
 
-        if ($operand instanceof ExpressionAbstract) {
-            return '(' . $operand->getQueryString($parameters) . ')';
-        }
-
         if ($operand instanceof Column) {
             return $operand->getFullName(true);
+        }
+
+        if ($operand instanceof ExpressionAbstract) {
+            return '(' . $operand->getQueryString($parameters) . ')';
         }
 
         throw new RuntimeException('Unexpected operand type: ' . gettype($operand));

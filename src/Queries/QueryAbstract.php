@@ -6,6 +6,7 @@ namespace Kuvardin\TinyOrm\Queries;
 
 use Kuvardin\TinyOrm\Connection;
 use Kuvardin\TinyOrm\Exception\AlreadyExists;
+use Kuvardin\TinyOrm\Expressions\ExpressionAbstract;
 use Kuvardin\TinyOrm\FinalQuery;
 use Kuvardin\TinyOrm\Parameters;
 use PDOException;
@@ -15,7 +16,7 @@ use PDOStatement;
  * @package Kuvardin\TinyOrm
  * @author Maxim Kuvardin <maxim@kuvard.in>
  */
-abstract class QueryAbstract
+abstract class QueryAbstract extends ExpressionAbstract
 {
     protected Connection $connection;
 
@@ -33,5 +34,10 @@ abstract class QueryAbstract
     final public function execute(Parameters $parameters = null): PDOStatement
     {
         return $this->connection->executeFinalQuery($this->getFinalQuery($parameters));
+    }
+
+    final public function getQueryString(Parameters $parameters): string
+    {
+        return $this->getFinalQuery($parameters)->value;
     }
 }
