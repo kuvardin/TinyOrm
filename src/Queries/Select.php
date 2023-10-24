@@ -7,11 +7,13 @@ namespace Kuvardin\TinyOrm\Queries;
 use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
 use Kuvardin\TinyOrm\Expressions\ExpressionSql;
 use Kuvardin\TinyOrm\FinalQuery;
+use Kuvardin\TinyOrm\Joins\JoinAbstract;
 use Kuvardin\TinyOrm\Parameters;
 use Kuvardin\TinyOrm\Connection;
 use Kuvardin\TinyOrm\SelectExpression;
 use Kuvardin\TinyOrm\Sorting\SortingSettings;
 use Kuvardin\TinyOrm\Table;
+use Kuvardin\TinyOrm\Traits\JoinsListTrait;
 use Kuvardin\TinyOrm\Traits\QueryConditionsListTrait;
 
 /**
@@ -22,11 +24,18 @@ use Kuvardin\TinyOrm\Traits\QueryConditionsListTrait;
 class Select extends QueryAbstract
 {
     use QueryConditionsListTrait;
+    use JoinsListTrait;
+
+    /**
+     * @var SelectExpression[]
+     */
+    protected array $select_expressions = [];
 
     public function __construct(
         Connection $connection,
         public ?Table $table = null,
-        protected array $select_expressions = [],
+        array $select_expressions = [],
+        array $joins = [],
         ?ConditionAbstract $condition_item = null,
         public ?SortingSettings $sorting_settings = null,
         public ?int $limit = null,
@@ -35,6 +44,14 @@ class Select extends QueryAbstract
     {
         parent::__construct($connection);
         $this->setWhere($condition_item);
+
+        if ($select_expressions !== []) {
+            $this->setSelectExpressions($select_expressions);
+        }
+
+        if ($joins !== []) {
+            $this->setJoins($joins);
+        }
     }
 
     public function setTable(Table $table): self
@@ -105,21 +122,21 @@ class Select extends QueryAbstract
     {
         $parameters ??= new Parameters;
 
-        if ($this->select_expressions === []) {
-            $select_expressions_query = '*';
-        } else {
-            $select_expressions_query = implode(
-                ', ',
-                array_map(
-                    static fn(SelectExpression $se) => $se->getQueryString($parameters),
-                    $this->select_expressions,
-                ),
-            );
-        }
+        $select_expressions = $this->select_expressions === []
+            ? [SelectExpression::allColumns()]
+            : $this->select_expressions;
+
+        $select_expressions_query = implode(
+            ', ',
+            array_map(
+                static fn(SelectExpression $se) => $se->getQueryString($parameters),
+                $select_expressions,
+            ),
+        );
 
         $result = "SELECT $select_expressions_query";
 
-        $result .= " FROM {$this->table->getFullName(true)}";
+        $result .= " FROM {$this->table->getFullName(true, true)}";
 
         if (!$this->conditions->isEmpty()) {
             $result .= ' WHERE ' . $this->conditions->getQueryString($parameters);

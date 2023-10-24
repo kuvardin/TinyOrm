@@ -46,7 +46,16 @@ class Column extends ExpressionAbstract
     public function getFullName(bool $with_quotes = false): string
     {
         $q = $with_quotes ? '"' : '';
-        return $this->table === null ? $this->name : "{$this->table->getFullName(true)}.$q{$this->name}$q";
+
+        if ($this->table === null) {
+            return $q . $this->name . $q;
+        }
+
+        if ($this->table->alias !== null) {
+            return $this->table->alias . '.' . $q . $this->name . $q;
+        }
+
+        return $this->table->getFullName(true) . '.' . $q . $this->name . $q;
     }
 
     public function __toString(): string

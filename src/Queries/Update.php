@@ -8,6 +8,7 @@ use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
 use Kuvardin\TinyOrm\Connection;
 use Kuvardin\TinyOrm\FinalQuery;
 use Kuvardin\TinyOrm\Parameters;
+use Kuvardin\TinyOrm\SelectExpression;
 use Kuvardin\TinyOrm\Table;
 use Kuvardin\TinyOrm\Traits\QueryConditionsListTrait;
 use Kuvardin\TinyOrm\Values\ColumnValue;
@@ -25,16 +26,26 @@ class Update extends QueryAbstract
 
     public ValuesSet $values_set;
 
+    /**
+     * @var SelectExpression[]
+     */
+    protected array $output_expressions = [];
+
     public function __construct(
         Connection $connection,
         public Table $table,
         ValuesSet $values_set = null,
         ConditionAbstract $condition_item = null,
-        public ?string $output_expression = null,
+        array $output_expressions = [],
         public ?bool $only = false,
     )
     {
         parent::__construct($connection);
+
+        if ($output_expressions !== []) {
+            $this->setOutputExpressions($output_expressions);
+        }
+
         $this->setWhere($condition_item);
         $this->setValuesSet($values_set);
     }
@@ -45,9 +56,28 @@ class Update extends QueryAbstract
         return $this;
     }
 
-    public function setOutputExpression(?string $output_expression): self
+    /**
+     * @return SelectExpression[]
+     */
+    public function getOutputExpressions(): array
     {
-        $this->output_expression = $output_expression;
+        return $this->output_expressions;
+    }
+
+    public function setOutputExpressions(array $output_expressions): self
+    {
+        $this->output_expressions = [];
+
+        foreach ($output_expressions as $output_expression) {
+            $this->appendOutputExpression($output_expression);
+        }
+
+        return $this;
+    }
+
+    public function appendOutputExpression(SelectExpression $output_expression): self
+    {
+        $this->output_expressions[] = $output_expression;
         return $this;
     }
 
@@ -103,8 +133,16 @@ class Update extends QueryAbstract
             $result .= ' WHERE ' . $this->conditions->getQueryString($parameters);
         }
 
-        if ($this->output_expression !== null && $this->output_expression !== '') {
-            $result .= " RETURNING {$this->output_expression}";
+        if ($this->output_expressions !== []) {
+            $output_expressions_query = implode(
+                ', ',
+                array_map(
+                    static fn(SelectExpression $se) => $se->getQueryString($parameters),
+                    $this->output_expressions,
+                ),
+            );
+
+            $result .= " RETURNING $output_expressions_query";
         }
 
         return new FinalQuery($result, $parameters);

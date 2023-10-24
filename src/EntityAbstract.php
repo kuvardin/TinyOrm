@@ -473,7 +473,7 @@ abstract class EntityAbstract
                 ->createUpdateQuery($this->entity_table)
                 ->setValues($this->unsaved_changes)
                 ->setWhere(new Condition(self::COL_ID, $this->id))
-                ->setOutputExpression('*')
+                ->appendOutputExpression(SelectExpression::allColumns())
                 ->execute()
                 ->fetch()
             ;

@@ -16,7 +16,7 @@ class BinaryOperation extends ExpressionAbstract
     public function __construct(
         readonly public mixed $operand_first,
         readonly public mixed $operand_second,
-        readonly string $operator,
+        readonly public string $operator,
     )
     {
 
