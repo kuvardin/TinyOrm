@@ -12,6 +12,7 @@ use Kuvardin\TinyOrm\Conditions\ConditionsList;
 use Kuvardin\TinyOrm\Enums\RuleForSavingChanges;
 use Kuvardin\TinyOrm\Exception\AlreadyExists;
 use Kuvardin\TinyOrm\Expressions\ExpressionAbstract;
+use Kuvardin\TinyOrm\Joins\JoinAbstract;
 use Kuvardin\TinyOrm\Sorting\SortingSettings;
 use Kuvardin\TinyOrm\Values\ColumnValue;
 use Kuvardin\TinyOrm\Values\ValuesSet;
@@ -302,10 +303,12 @@ abstract class EntityAbstract
     }
 
     /**
-     * @return Generator|static[]
+     * @param JoinAbstract[] $joins
+     * @return Generator<static>
      */
     public static function findByConditions(
         ConditionAbstract|array $conditions = null,
+        array $joins = [],
         SortingSettings $sorting_settings = null,
         int $limit = null,
         int $offset = null,
@@ -317,6 +320,7 @@ abstract class EntityAbstract
 
         $generator = self::findRawDataByConditions(
             conditions: is_array($conditions) ? ConditionsList::fromValuesArray($conditions) : $conditions,
+            joins: $joins,
             sorting_settings: $sorting_settings,
             limit: $limit,
             offset: $offset,
@@ -331,8 +335,13 @@ abstract class EntityAbstract
         }
     }
 
+    /**
+     * @param JoinAbstract[] $joins
+     * @return Generator<array>
+     */
     protected static function findRawDataByConditions(
         ConditionAbstract|array $conditions = null,
+        array $joins = [],
         SortingSettings $sorting_settings = null,
         int $limit = null,
         int $offset = null,
@@ -350,6 +359,10 @@ abstract class EntityAbstract
             ->setOffset($offset)
             ->setSortingSettings($sorting_settings)
         ;
+
+        if ($joins !== []) {
+            $qb->setJoins($joins);
+        }
 
         if ($conditions !== null) {
             $qb->setWhere(

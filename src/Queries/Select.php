@@ -138,6 +138,13 @@ class Select extends QueryAbstract
 
         $result .= " FROM {$this->table->getFullName(true, true)}";
 
+        if ($this->joins !== []) {
+            $result .= implode(
+                ' ',
+                array_map(static fn(JoinAbstract $join) => $join->getQueryString($parameters), $this->joins),
+            );
+        }
+
         if (!$this->conditions->isEmpty()) {
             $result .= ' WHERE ' . $this->conditions->getQueryString($parameters);
         }
