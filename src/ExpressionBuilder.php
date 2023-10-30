@@ -193,12 +193,8 @@ class ExpressionBuilder
 
     public static function getArithmeticOperandQueryString(mixed $operand, Parameters $parameters): string
     {
-        if (is_int($operand)) {
-            return $parameters->pushValue($operand, PDO::PARAM_INT);
-        }
-
-        if (is_float($operand)) {
-            return $parameters->pushValue($operand);
+        if (is_int($operand) || is_float($operand)) {
+            return (string)$operand;
         }
 
         if (is_string($operand)) {
