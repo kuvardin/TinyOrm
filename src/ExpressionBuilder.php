@@ -221,6 +221,15 @@ class ExpressionBuilder
             return '(' . $operand->getQueryString($parameters) . ')';
         }
 
+        if (is_array($operand)) {
+            $array_items = array_map(
+                static fn(mixed $value) => self::getArithmeticOperandQueryString($value, $parameters),
+                $operand,
+            );
+
+            return '(' . implode(', ', $array_items) . ')';
+        }
+
         throw new RuntimeException('Unexpected operand type: ' . gettype($operand));
     }
 }
