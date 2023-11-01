@@ -169,7 +169,7 @@ abstract class EntityAbstract
             ->fetchColumn()
         ;
 
-        return !($result === false);
+        return (bool)$result;
     }
 
     public static function countByConditions(
