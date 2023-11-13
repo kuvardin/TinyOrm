@@ -92,6 +92,28 @@ class Condition extends ConditionAbstract
                 $result = "{$column_name} {$this->operator->value} {$value->getFullName(true)}";
             } elseif ($value instanceof ExpressionAbstract) {
                 $result = "{$column_name} {$this->operator->value} {$value->getQueryString($parameters)}";
+            } elseif (is_array($value)) {
+                $parameters_array = [];
+                foreach ($value as $one_value) {
+                    if ($this->pdo_param_type === null && is_int($one_value)) {
+                        $parameters_array[] = $one_value;
+                    } else {
+                        $parameters_array[] = $parameters->pushValue($one_value, $this->pdo_param_type);
+                    }
+                }
+
+                $operator_value = match ($this->operator) {
+                    Operator::Equals => 'IN',
+                    Operator::NotEquals => 'NOT IN',
+                    default => $this->operator->value,
+                };
+
+                $result = sprintf(
+                    '%s %s (%s)',
+                    $column_name,
+                    $operator_value,
+                    implode(', ', $parameters_array),
+                );
             } else {
                 $parameter = $parameters->pushValue($value, $this->pdo_param_type);
                 $result = "{$column_name} {$this->operator->value} $parameter";
