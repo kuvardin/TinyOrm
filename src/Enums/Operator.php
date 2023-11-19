@@ -18,4 +18,6 @@ enum Operator: string
     case LessOrEqual = '<=';
     case Like = 'like';
     case ILike = 'ilike';
+    case In = 'IN';
+    case NotIn = 'NOT IN';
 }
