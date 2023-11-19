@@ -115,7 +115,7 @@ class ConditionsList extends ConditionAbstract
         $result_parts = [];
         foreach ($this->items as $item) {
             $item_result = $result_parts === [] ? '' : "{$item->prefix->value} ";
-            if ($item instanceof Condition) {
+            if (($item instanceof Condition) || ($item instanceof ConditionSelect)) {
                 $item_result .= $item->getQueryString($parameters);
             } elseif (($item instanceof ConditionsList) || ($item instanceof ConditionExpression)) {
                 $item_result .= '(' . $item->getQueryString($parameters) . ')';
