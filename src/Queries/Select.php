@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Kuvardin\TinyOrm\Queries;
 
+use Kuvardin\TinyOrm\Column;
 use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
+use Kuvardin\TinyOrm\Enums\GroupingMode;
 use Kuvardin\TinyOrm\Expressions\ExpressionSql;
 use Kuvardin\TinyOrm\FinalQuery;
+use Kuvardin\TinyOrm\Grouping\GroupingElementAbstract;
 use Kuvardin\TinyOrm\Joins\JoinAbstract;
 use Kuvardin\TinyOrm\Parameters;
 use Kuvardin\TinyOrm\Connection;
@@ -31,6 +34,16 @@ class Select extends QueryAbstract
      */
     protected array $select_expressions = [];
 
+    /**
+     * @var GroupingElementAbstract[]
+     */
+    protected array $grouping_elements = [];
+
+    /**
+     * @param SelectExpression[] $select_expressions
+     * @param JoinAbstract[] $joins
+     * @param GroupingElementAbstract[] $grouping_elements
+     */
     public function __construct(
         Connection $connection,
         public ?Table $table = null,
@@ -38,6 +51,8 @@ class Select extends QueryAbstract
         array $joins = [],
         ?ConditionAbstract $condition_item = null,
         public ?SortingSettings $sorting_settings = null,
+        array $grouping_elements = [],
+        public ?GroupingMode $grouping_mode = null,
         public ?int $limit = null,
         public ?int $offset = null,
     )
@@ -51,6 +66,10 @@ class Select extends QueryAbstract
 
         if ($joins !== []) {
             $this->setJoins($joins);
+        }
+
+        if ($grouping_elements !== []) {
+            $this->setGroupingElements($grouping_elements);
         }
     }
 
@@ -103,6 +122,29 @@ class Select extends QueryAbstract
         return $this;
     }
 
+    public function setGroupingMode(?GroupingMode $grouping_mode): self
+    {
+        $this->grouping_mode = $grouping_mode;
+        return $this;
+    }
+
+    public function setGroupingElements(array $grouping_elements): self
+    {
+        $this->grouping_elements = [];
+
+        foreach ($grouping_elements as $grouping_element) {
+            $this->appendGroupingElement($grouping_element);
+        }
+
+        return $this;
+    }
+
+    public function appendGroupingElement(GroupingElementAbstract $grouping_element): self
+    {
+        $this->grouping_elements[] = $grouping_element;
+        return $this;
+    }
+
     public function count(): int
     {
         $select = new self(
@@ -147,6 +189,28 @@ class Select extends QueryAbstract
 
         if (!$this->conditions->isEmpty()) {
             $result .= ' WHERE ' . $this->conditions->getQueryString($parameters);
+        }
+
+        if ($this->grouping_elements !== []) {
+            $grouping_elements_queries = [];
+
+            foreach ($this->grouping_elements as $grouping_element) {
+                $grouping_elements_query = $grouping_element->getQueryString($parameters);
+
+                if ($grouping_elements_query !== null) {
+                    $grouping_elements_queries[] = $grouping_elements_query;
+                }
+            }
+
+            if ($grouping_elements_queries !== []) {
+                $result .= 'GROUP BY ';
+
+                if ($this->grouping_mode !== null) {
+                    $result .= $this->grouping_mode->value . ' ';
+                }
+
+                $result .= implode(', ', $grouping_elements_queries);
+            }
         }
 
         if ($this->sorting_settings !== null && !$this->sorting_settings->isEmpty()) {
