@@ -6,6 +6,7 @@ namespace Kuvardin\TinyOrm;
 
 use Kuvardin\TinyOrm\Enums\RuleForSavingChanges;
 use Kuvardin\TinyOrm\Exception\AlreadyExists;
+use Kuvardin\TinyOrm\Loggers\LoggerInterface;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -34,6 +35,8 @@ class Connection extends PDO
 
     public ?string $last_query = null;
     public ?array $last_query_parameters = null;
+
+    public ?LoggerInterface $logger = null;
 
     public static function create(
         string $adapter,
@@ -114,9 +117,16 @@ class Connection extends PDO
         $this->last_query = $stmt->queryString;
         $this->last_query_parameters = $query->parameters?->toArray() ?? [];
 
+        if ($this->logger !== null) {
+            $start_microtime = microtime(true);
+        }
+
+        $pdo_exception = null;
+
         try {
             $stmt->execute();
         } catch (PDOException $pdo_exception) {
+
             if ($pdo_exception->getCode() == '23505') {
                 $already_exists = new AlreadyExists(
                     $pdo_exception->getMessage(),
@@ -129,6 +139,13 @@ class Connection extends PDO
             }
 
             throw $pdo_exception;
+        } finally {
+            $this->logger?->log(
+                query: $query->value,
+                parameters: $query->parameters?->toArray() ?? [],
+                duration: (microtime(true) - $start_microtime) * 1000,
+                exception: $pdo_exception,
+            );
         }
 
         return $stmt;
