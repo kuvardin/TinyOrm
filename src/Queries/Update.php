@@ -96,6 +96,8 @@ class Update extends QueryAbstract
             $this->values_set = new ValuesSet($this->table);
         } elseif (!$this->table->isEquals($values_set->table)) {
             throw new RuntimeException("Wrong values set table: {$values_set->table->getFullName()}");
+        } else {
+            $this->values_set = $values_set;
         }
 
         return $this;
