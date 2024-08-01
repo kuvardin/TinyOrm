@@ -12,8 +12,8 @@ use Kuvardin\TinyOrm\SpecialValues\IsNull;
  */
 class SpecialValues
 {
-    static ?IsNull $is_null = null;
-    static ?IsNull $not_null = null;
+    private static ?IsNull $is_null = null;
+    private static ?IsNull $not_null = null;
 
     private function __construct()
     {
