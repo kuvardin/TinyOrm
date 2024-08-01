@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace Kuvardin\TinyOrm;
 
+use Kuvardin\TinyOrm\SpecialValues\IsNull;
+
 /**
  * @package Kuvardin\TinyOrm
  * @author Maxim Kuvardin <maxim@kuvard.in>
  */
 class SpecialValues
 {
+    static ?IsNull $is_null = null;
+    static ?IsNull $not_null = null;
+
     private function __construct()
     {
 
@@ -17,12 +22,12 @@ class SpecialValues
 
     public static function isNull(): SpecialValues\IsNull
     {
-        return new SpecialValues\IsNull;
+        return self::$is_null ??= new SpecialValues\IsNull;
     }
 
     public static function notNull(): SpecialValues\NotNull
     {
-        return new SpecialValues\NotNull;
+        return self::$not_null ??= new SpecialValues\NotNull;
     }
 
     public static function nullOrNotNull(?bool $is_null): SpecialValues\IsNull|SpecialValues\NotNull|null
