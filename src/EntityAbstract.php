@@ -452,7 +452,13 @@ abstract class EntityAbstract
             throw new RuntimeException("Wrong column table: {$column->table->getFullName()}");
         }
 
-        if ($force || $new_value instanceof ExpressionAbstract || $current_value !== $new_value) {
+        if (
+            $force
+            || $new_value instanceof ExpressionAbstract
+            || $current_value !== $new_value
+            || is_array($current_value)
+            || is_array($new_value)
+        ) {
             if ($new_value instanceof ColumnValue) {
                 if (!$column->isEquals($new_value->column)) {
                     throw new RuntimeException("Unexpected column: {$new_value->column} (must be $column)");
@@ -465,7 +471,7 @@ abstract class EntityAbstract
         }
 
         if (
-            $new_value !== $current_value
+            ($new_value !== $current_value || is_array($current_value) || is_array($new_value))
             && ($new_value === null || $new_value_is_scalar)
         ) {
             $current_value = $new_value;
