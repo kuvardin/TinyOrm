@@ -42,8 +42,8 @@ class ColumnValue
             return $this->value ? 'True' : 'False';
         }
 
-        if (is_array($this->value)) {
-            return json_encode($this->value, JSON_THROW_ON_ERROR);
+        if (is_array($this->value) && $this->type === null) {
+            return $parameters->pushValue(json_encode($this->value, JSON_THROW_ON_ERROR), $this->type);
         }
 
         if ($this->value instanceof EntityAbstract) {
