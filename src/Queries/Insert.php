@@ -74,7 +74,7 @@ class Insert extends QueryAbstract
             $values_rows[] = $values;
         }
 
-        $result .= ' (' . implode(', ', $column_names) . ')';
+        $result .= ' ("' . implode('", "', $column_names) . '")';
 
         $result_values_strings = [];
         foreach ($values_rows as $values_row) {
