@@ -172,8 +172,12 @@ abstract class EntityAbstract
         return (bool)$result;
     }
 
+    /**
+     * @param JoinAbstract[]|null $joins
+     */
     public static function countByConditions(
         ConditionAbstract|array $conditions = null,
+        array $joins = null,
         Connection $connection = null,
         Table $table = null,
     ): int
@@ -190,6 +194,10 @@ abstract class EntityAbstract
                 ),
             ])
             ->setTable($table);
+
+        if ($joins !== null) {
+            $qb->setJoins($joins);
+        }
 
         if ($conditions !== null) {
             $qb->setWhere(
