@@ -363,6 +363,9 @@ abstract class EntityAbstract
         $qb = $connection
             ->getQueryBuilder()
             ->createSelectQuery($table)
+            ->setSelectExpressions([
+                SelectExpression::expression($table->getColumn('*'))
+            ])
             ->setLimit($limit)
             ->setOffset($offset)
             ->setSortingSettings($sorting_settings)

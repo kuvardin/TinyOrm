@@ -30,7 +30,7 @@ class Column extends ExpressionAbstract
 
     public static function validateName(string $name_part): bool
     {
-        return (bool)preg_match('|^[a-zA-Z][a-zA-Z0-9_]+$|', $name_part);
+        return $name_part === '*' || preg_match('|^[a-zA-Z][a-zA-Z0-9_]+$|', $name_part);
     }
 
     public function isEquals(self $another_column): bool
@@ -47,15 +47,19 @@ class Column extends ExpressionAbstract
     {
         $q = $with_quotes ? '"' : '';
 
+        $name_full = $this->name === '*'
+            ? $this->name
+            : ($q . $this->name . $q);
+
         if ($this->table === null) {
-            return $q . $this->name . $q;
+            return $name_full;
         }
 
         if ($this->table->alias !== null) {
-            return $this->table->alias . '.' . $q . $this->name . $q;
+            return $this->table->alias . '.' . $name_full;
         }
 
-        return $this->table->getFullName($with_quotes) . '.' . $q . $this->name . $q;
+        return $this->table->getFullName($with_quotes) . '.' . $name_full;
     }
 
     public function __toString(): string
