@@ -55,7 +55,7 @@ class Column extends ExpressionAbstract
             return $this->table->alias . '.' . $q . $this->name . $q;
         }
 
-        return $this->table->getFullName(true) . '.' . $q . $this->name . $q;
+        return $this->table->getFullName($with_quotes) . '.' . $q . $this->name . $q;
     }
 
     public function __toString(): string
