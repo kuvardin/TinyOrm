@@ -8,10 +8,18 @@ use DateTime;
 use PDOException;
 use RuntimeException;
 
+/**
+ * Logging the results of query execution to a file
+ */
 class FileLogger implements LoggerInterface
 {
+    /**
+     * @param string $file_path Path to the file where logging will be performed
+     * @param int|null $execution_duration_min The minimum amount of time to execute a request in milliseconds
+     */
     public function __construct(
         readonly public string $file_path,
+        readonly public ?int $execution_duration_min = null,
     )
     {
 
@@ -19,6 +27,14 @@ class FileLogger implements LoggerInterface
 
     public function log(string $query, array $parameters, float $duration, ?PDOException $exception): void
     {
+        if (
+            $this->execution_duration_min !== null
+            && $exception === null
+            && $duration < $this->execution_duration_min
+        ) {
+            return;
+        }
+
         $f = fopen($this->file_path, 'a');
 
         if ($f === false) {
