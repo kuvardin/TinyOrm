@@ -28,7 +28,7 @@ class SelectExpression
         return new self(null);
     }
 
-    public static function expression(ExpressionAbstract $expression, string $output_name = null): self
+    public static function expression(ExpressionAbstract $expression, ?string $output_name = null): self
     {
         return new self($expression, $output_name);
     }

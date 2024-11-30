@@ -53,7 +53,7 @@ class ValuesSet
     public function add(
         Column|string $column,
         mixed $value,
-        int $type = null,
+        ?int $type = null,
         bool $value_is_sql = false,
     ): self
     {

@@ -34,8 +34,8 @@ class Update extends QueryAbstract
     public function __construct(
         Connection $connection,
         public Table $table,
-        ValuesSet $values_set = null,
-        ConditionAbstract $condition_item = null,
+        ?ValuesSet $values_set = null,
+        ?ConditionAbstract $condition_item = null,
         array $output_expressions = [],
         public ?bool $only = false,
     )
@@ -90,7 +90,7 @@ class Update extends QueryAbstract
         return $this;
     }
 
-    public function setValuesSet(ValuesSet $values_set = null): self
+    public function setValuesSet(?ValuesSet $values_set = null): self
     {
         if ($values_set === null) {
             $this->values_set = new ValuesSet($this->table);
@@ -109,7 +109,7 @@ class Update extends QueryAbstract
         return $this;
     }
 
-    public function getFinalQuery(Parameters $parameters = null): FinalQuery
+    public function getFinalQuery(?Parameters $parameters = null): FinalQuery
     {
         if ($this->values_set->isEmpty()) {
             throw new RuntimeException('Values set is empty');

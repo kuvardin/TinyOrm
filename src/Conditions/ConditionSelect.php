@@ -18,8 +18,8 @@ class ConditionSelect extends ConditionAbstract
         Column|string $column,
         public Select $select,
         public Operator $operator = Operator::In,
-        LogicalOperator $prefix = null,
-        bool $invert = null,
+        ?LogicalOperator $prefix = null,
+        ?bool $invert = null,
     )
     {
         $this->column = is_string($column) ? new Column($column) : $column;

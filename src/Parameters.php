@@ -39,7 +39,7 @@ class Parameters
         return $result;
     }
 
-    public function push(string $name, mixed $value, int $type = null): self
+    public function push(string $name, mixed $value, ?int $type = null): self
     {
         if (array_key_exists($name, $this->parameters)) {
             throw new RuntimeException("Parameter with name $name already set");
@@ -57,7 +57,7 @@ class Parameters
         return $this;
     }
 
-    public function pushValue(mixed $value, int $type = null): string
+    public function pushValue(mixed $value, ?int $type = null): string
     {
         $name = $this->generateName();
         $this->push($name, $value, $type);

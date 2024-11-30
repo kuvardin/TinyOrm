@@ -22,7 +22,7 @@ class QueryBuilder
 
     }
 
-    public function createSelectQuery(Table $table = null): Select
+    public function createSelectQuery(?Table $table = null): Select
     {
         return new Select($this->connection, $table);
     }

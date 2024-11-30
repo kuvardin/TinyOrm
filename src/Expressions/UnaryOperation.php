@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Kuvardin\TinyOrm\Expressions;
 
-use Kuvardin\TinyOrm\Column;
-use Kuvardin\TinyOrm\EntityAbstract;
 use Kuvardin\TinyOrm\ExpressionBuilder;
 use Kuvardin\TinyOrm\Parameters;
 

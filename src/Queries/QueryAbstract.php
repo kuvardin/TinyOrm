@@ -25,13 +25,13 @@ abstract class QueryAbstract extends ExpressionAbstract
         $this->connection = $connection;
     }
 
-    abstract public function getFinalQuery(Parameters $parameters = null): FinalQuery;
+    abstract public function getFinalQuery(?Parameters $parameters = null): FinalQuery;
 
     /**
      * @throws PDOException
      * @throws AlreadyExists
      */
-    final public function execute(Parameters $parameters = null): PDOStatement
+    final public function execute(?Parameters $parameters = null): PDOStatement
     {
         return $this->connection->executeFinalQuery($this->getFinalQuery($parameters));
     }

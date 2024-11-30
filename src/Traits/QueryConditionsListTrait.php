@@ -27,8 +27,8 @@ trait QueryConditionsListTrait
 
     public function setWhereExpression(
         ExpressionAbstract $expression,
-        LogicalOperator $prefix = null,
-        bool $invert = null,
+        ?LogicalOperator $prefix = null,
+        ?bool $invert = null,
     ): self
     {
         return $this->setWhere(new ConditionExpression($expression, $prefix, $invert));
@@ -49,7 +49,7 @@ trait QueryConditionsListTrait
 
     public function andWhereExpression(
         ExpressionAbstract $expression,
-        bool $invert = null,
+        ?bool $invert = null,
     ): self
     {
         return $this->andWhere(new ConditionExpression($expression, invert: $invert));
@@ -68,7 +68,7 @@ trait QueryConditionsListTrait
 
     public function orWhereExpression(
         ExpressionAbstract $expression,
-        bool $invert = null,
+        ?bool $invert = null,
     ): self
     {
         return $this->orWhere(new ConditionExpression($expression, invert: $invert));

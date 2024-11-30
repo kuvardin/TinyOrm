@@ -45,7 +45,7 @@ class Connection extends PDO
         string $base,
         string $username,
         string $password,
-        array $options = null,
+        ?array $options = null,
         bool $is_default = false,
     ): self
     {

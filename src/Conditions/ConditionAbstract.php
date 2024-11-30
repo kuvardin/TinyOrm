@@ -17,8 +17,8 @@ abstract class ConditionAbstract
     public bool $invert = false;
 
     public function __construct(
-        LogicalOperator $prefix = null,
-        bool $invert = null,
+        ?LogicalOperator $prefix = null,
+        ?bool $invert = null,
     )
     {
         $this->prefix = $prefix ?? LogicalOperator::And;

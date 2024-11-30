@@ -27,7 +27,7 @@ class ExpressionBuilder
         return new UnaryOperation($operand_first, 'COUNT(', ')');
     }
 
-    public function column(string $name, Table $table = null): Column
+    public function column(string $name, ?Table $table = null): Column
     {
         return new Column($name, $table);
     }
@@ -36,7 +36,7 @@ class ExpressionBuilder
     {
         return new BinaryOperation($operand_first, $operand_second, $operator);
     }
-    public function unaryOperation(mixed $operand, string $prefix = null, string $postfix = null): UnaryOperation
+    public function unaryOperation(mixed $operand, ?string $prefix = null, ?string $postfix = null): UnaryOperation
     {
         return new UnaryOperation($operand, $prefix, $postfix);
     }

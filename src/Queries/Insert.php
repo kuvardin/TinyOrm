@@ -47,7 +47,7 @@ class Insert extends QueryAbstract
         return $this;
     }
 
-    public function getFinalQuery(Parameters $parameters = null): FinalQuery
+    public function getFinalQuery(?Parameters $parameters = null): FinalQuery
     {
         $parameters ??= new Parameters;
         $result = "INSERT INTO {$this->table->getFullName(true)}";

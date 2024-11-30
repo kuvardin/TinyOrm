@@ -57,8 +57,8 @@ abstract class EntityAbstract
      */
     public static function createByValuesSet(
         ValuesSet|array $values_set,
-        Connection $connection = null,
-        Table $table = null,
+        ?Connection $connection = null,
+        ?Table $table = null,
     ): static
     {
         $table ??= static::getEntityTableDefault();
@@ -86,9 +86,9 @@ abstract class EntityAbstract
 
     public static function findOneByConditions(
         ConditionAbstract|array $conditions,
-        SortingSettings $sorting_settings = null,
-        Connection $connection = null,
-        Table $table = null,
+        ?SortingSettings $sorting_settings = null,
+        ?Connection $connection = null,
+        ?Table $table = null,
     ): ?static
     {
         $data = self::findOneRawDataByConditions(
@@ -103,9 +103,9 @@ abstract class EntityAbstract
 
     protected static function findOneRawDataByConditions(
         ConditionAbstract|array $conditions,
-        SortingSettings $sorting_settings = null,
-        Connection $connection = null,
-        Table $table = null,
+        ?SortingSettings $sorting_settings = null,
+        ?Connection $connection = null,
+        ?Table $table = null,
     ): ?array
     {
         $generator = self::findRawDataByConditions(
@@ -121,8 +121,8 @@ abstract class EntityAbstract
 
     public static function requireOneByConditions(
         ConditionAbstract|array $conditions,
-        Connection $connection = null,
-        Table $table = null,
+        ?Connection $connection = null,
+        ?Table $table = null,
     ): static
     {
         $result = self::findOneByConditions(
@@ -139,9 +139,9 @@ abstract class EntityAbstract
     }
 
     public static function checkExistsByConditions(
-        ConditionAbstract|array $conditions = null,
-        Connection $connection = null,
-        Table $table = null,
+        ConditionAbstract|array|null $conditions = null,
+        ?Connection $connection = null,
+        ?Table $table = null,
     ): bool
     {
         $connection ??= Connection::requireConnectionDefault();
@@ -176,10 +176,10 @@ abstract class EntityAbstract
      * @param JoinAbstract[]|null $joins
      */
     public static function countByConditions(
-        ConditionAbstract|array $conditions = null,
-        array $joins = null,
-        Connection $connection = null,
-        Table $table = null,
+        ConditionAbstract|array|null $conditions = null,
+        ?array $joins = null,
+        ?Connection $connection = null,
+        ?Table $table = null,
     ): int
     {
         $connection ??= Connection::requireConnectionDefault();
@@ -216,8 +216,8 @@ abstract class EntityAbstract
 
     public static function requireOneById(
         int $id,
-        Connection $connection = null,
-        Table $table = null,
+        ?Connection $connection = null,
+        ?Table $table = null,
         bool $use_cache = true,
     ): static
     {
@@ -231,8 +231,8 @@ abstract class EntityAbstract
 
     public static function findOneById(
         int $id,
-        Connection $connection = null,
-        Table $table = null,
+        ?Connection $connection = null,
+        ?Table $table = null,
         bool $use_cache = true,
     ): ?static
     {
@@ -253,8 +253,8 @@ abstract class EntityAbstract
 
     protected static function findOneFromCacheById(
         int $id,
-        Connection $connection = null,
-        Table $table = null,
+        ?Connection $connection = null,
+        ?Table $table = null,
     ): ?static
     {
         $connection ??= Connection::requireConnectionDefault();
@@ -271,8 +271,8 @@ abstract class EntityAbstract
 
     protected static function upsertInCache(
         array $data,
-        Connection $connection = null,
-        Table $table = null,
+        ?Connection $connection = null,
+        ?Table $table = null,
         bool $add_to_cache = true,
     ): static
     {
@@ -304,7 +304,7 @@ abstract class EntityAbstract
         self::$cache = [];
     }
 
-    public static function clearCache(Connection $connection = null): void
+    public static function clearCache(?Connection $connection = null): void
     {
         $connection ??= Connection::requireConnectionDefault();
         self::$cache[$connection->getConnectionId()][static::class] = [];
@@ -315,13 +315,13 @@ abstract class EntityAbstract
      * @return Generator<static>
      */
     public static function findByConditions(
-        ConditionAbstract|array $conditions = null,
+        ConditionAbstract|array|null $conditions = null,
         array $joins = [],
-        SortingSettings $sorting_settings = null,
-        int $limit = null,
-        int $offset = null,
-        Connection $connection = null,
-        Table $table = null,
+        ?SortingSettings $sorting_settings = null,
+        ?int $limit = null,
+        ?int $offset = null,
+        ?Connection $connection = null,
+        ?Table $table = null,
     ): Generator
     {
         $connection ??= Connection::requireConnectionDefault();
@@ -348,13 +348,13 @@ abstract class EntityAbstract
      * @return Generator<array>
      */
     protected static function findRawDataByConditions(
-        ConditionAbstract|array $conditions = null,
+        ConditionAbstract|array|null $conditions = null,
         array $joins = [],
-        SortingSettings $sorting_settings = null,
-        int $limit = null,
-        int $offset = null,
-        Connection $connection = null,
-        Table $table = null,
+        ?SortingSettings $sorting_settings = null,
+        ?int $limit = null,
+        ?int $offset = null,
+        ?Connection $connection = null,
+        ?Table $table = null,
     ): Generator
     {
         $connection ??= Connection::requireConnectionDefault();
@@ -390,7 +390,7 @@ abstract class EntityAbstract
     /**
      * False is row was not found in database
      */
-    public function refreshData(array $data = null): bool
+    public function refreshData(?array $data = null): bool
     {
         $data ??= self::findOneRawDataByConditions(
             conditions: [
@@ -427,7 +427,7 @@ abstract class EntityAbstract
         Column|string $column,
         mixed &$current_value,
         mixed $new_value,
-        int $type = null,
+        ?int $type = null,
         bool $force = false,
         bool $strict = true,
     ): self
@@ -495,7 +495,7 @@ abstract class EntityAbstract
      * @throws AlreadyExists
      * @throws PDOException
      */
-    public function saveChanges(bool $apply_to_current_object = true, array &$new_entity_data = null): self
+    public function saveChanges(bool $apply_to_current_object = true, ?array &$new_entity_data = null): self
     {
         if ($this->unsaved_changes !== []) {
             $new_entity_data = $this->connection

@@ -91,8 +91,8 @@ class ConditionsList extends ConditionAbstract
 
     public function appendExpression(
         ExpressionAbstract $expression,
-        LogicalOperator $prefix = null,
-        bool $invert = null,
+        ?LogicalOperator $prefix = null,
+        ?bool $invert = null,
     ): self
     {
         $this->append(

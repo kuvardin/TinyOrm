@@ -25,8 +25,8 @@ class Condition extends ConditionAbstract
         Column|string $column,
         public mixed $value,
         public Operator $operator = Operator::Equals,
-        LogicalOperator $prefix = null,
-        bool $invert = null,
+        ?LogicalOperator $prefix = null,
+        ?bool $invert = null,
         public ?int $pdo_param_type = null,
     )
     {
@@ -37,8 +37,8 @@ class Condition extends ConditionAbstract
     public static function nullOrNotNull(
         Column|string $column,
         bool|null $is_null,
-        LogicalOperator $prefix = null,
-        bool $invert = null,
+        ?LogicalOperator $prefix = null,
+        ?bool $invert = null,
     ): ?self
     {
         if ($is_null !== null) {
@@ -50,8 +50,8 @@ class Condition extends ConditionAbstract
 
     public static function isNull(
         Column|string $column,
-        LogicalOperator $prefix = null,
-        bool $invert = null,
+        ?LogicalOperator $prefix = null,
+        ?bool $invert = null,
     ): self
     {
         return new self($column, new IsNull, prefix: $prefix, invert: $invert);
@@ -59,8 +59,8 @@ class Condition extends ConditionAbstract
 
     public static function notNull(
         Column|string $column,
-        LogicalOperator $prefix = null,
-        bool $invert = null,
+        ?LogicalOperator $prefix = null,
+        ?bool $invert = null,
     ): self
     {
         return new self($column, new NotNull, prefix: $prefix, invert: $invert);

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Kuvardin\TinyOrm\Queries;
 
-use Kuvardin\TinyOrm\Column;
 use Kuvardin\TinyOrm\Conditions\ConditionAbstract;
 use Kuvardin\TinyOrm\Enums\GroupingMode;
 use Kuvardin\TinyOrm\Expressions\ExpressionSql;
@@ -160,7 +159,7 @@ class Select extends QueryAbstract
         return $result === false ? 0 : $result;
     }
 
-    public function getFinalQuery(Parameters $parameters = null): FinalQuery
+    public function getFinalQuery(?Parameters $parameters = null): FinalQuery
     {
         $parameters ??= new Parameters;
 

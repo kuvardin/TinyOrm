@@ -23,12 +23,12 @@ class Sorting
 
     }
 
-    public static function asc(ExpressionAbstract $expression, bool $nulls_first = null): self
+    public static function asc(ExpressionAbstract $expression, ?bool $nulls_first = null): self
     {
         return new self($expression, SortDirection::Asc, $nulls_first);
     }
 
-    public static function desc(ExpressionAbstract $expression, bool $nulls_first = null): self
+    public static function desc(ExpressionAbstract $expression, ?bool $nulls_first = null): self
     {
         return new self($expression, SortDirection::Desc, $nulls_first);
     }

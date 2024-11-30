@@ -16,8 +16,8 @@ class ConditionExpression extends ConditionAbstract
 {
     public function __construct(
         public ExpressionAbstract $expression,
-        LogicalOperator $prefix = null,
-        bool $invert = null,
+        ?LogicalOperator $prefix = null,
+        ?bool $invert = null,
     )
     {
         parent::__construct($prefix, $invert);
