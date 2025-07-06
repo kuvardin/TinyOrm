@@ -24,7 +24,7 @@ class ConditionsList extends ConditionAbstract
     protected array $items = [];
 
     /**
-     * @param ConditionAbstract[] $items
+     * @param ConditionAbstract[]|ExpressionAbstract[] $items
      */
     public function __construct(
         array $items = [],
@@ -34,7 +34,9 @@ class ConditionsList extends ConditionAbstract
     {
         parent::__construct($this->prefix, $this->invert);
         foreach ($items as $item) {
-            $this->append($item);
+            $item instanceof ExpressionAbstract
+                ? $this->appendExpression($item)
+                : $this->append($item);
         }
     }
 
