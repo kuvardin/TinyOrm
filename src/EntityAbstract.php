@@ -106,6 +106,7 @@ abstract class EntityAbstract
         ?SortingSettings $sorting_settings = null,
         ?Connection $connection = null,
         ?Table $table = null,
+        ?callable $callback = null
     ): ?array
     {
         $generator = self::findRawDataByConditions(
@@ -114,6 +115,7 @@ abstract class EntityAbstract
             limit: 1,
             connection: $connection,
             table: $table,
+            callback: $callback
         );
 
         return $generator->valid() ? $generator->current() : null;
@@ -322,6 +324,7 @@ abstract class EntityAbstract
         ?int $offset = null,
         ?Connection $connection = null,
         ?Table $table = null,
+        ?callable $callback = null,
     ): Generator
     {
         $connection ??= Connection::requireConnectionDefault();
@@ -334,6 +337,7 @@ abstract class EntityAbstract
             offset: $offset,
             connection: $connection,
             table: $table,
+            callback: $callback,
         );
 
         if ($generator->valid()) {
@@ -355,6 +359,7 @@ abstract class EntityAbstract
         ?int $offset = null,
         ?Connection $connection = null,
         ?Table $table = null,
+        ?callable $callback = null,
     ): Generator
     {
         $connection ??= Connection::requireConnectionDefault();
@@ -379,6 +384,10 @@ abstract class EntityAbstract
             $qb->setWhere(
                 is_array($conditions) ? ConditionsList::fromValuesArray($conditions) : $conditions,
             );
+        }
+
+        if ($callback !== null) {
+            call_user_func($callback, $qb);
         }
 
         $stmt = $qb->execute();
