@@ -14,9 +14,8 @@ use Kuvardin\TinyOrm\Parameters;
 class BinaryOperation extends ExpressionAbstract
 {
     public function __construct(
-        readonly public mixed $operand_first,
-        readonly public mixed $operand_second,
         readonly public string $operator,
+        readonly public array $operands,
     )
     {
 
@@ -24,8 +23,12 @@ class BinaryOperation extends ExpressionAbstract
 
     public function getQueryString(Parameters $parameters): string
     {
-        return ExpressionBuilder::getArithmeticOperandQueryString($this->operand_first, $parameters) .
-            ' ' . $this->operator . ' ' .
-            ExpressionBuilder::getArithmeticOperandQueryString($this->operand_second, $parameters);
+        return implode(
+            " {$this->operator} ",
+            array_map(
+                static fn(mixed $o) => ExpressionBuilder::getArithmeticOperandQueryString($o, $parameters),
+                $this->operands,
+            ),
+        );
     }
 }

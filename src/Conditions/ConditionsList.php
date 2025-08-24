@@ -64,7 +64,7 @@ class ConditionsList extends ConditionAbstract
             } elseif ($value instanceof ExpressionAbstract) {
                 if (is_string($column)) {
                     $result->appendExpression(
-                        new BinaryOperation(new Column($column), $value, Operator::Equals->value),
+                        new BinaryOperation(Operator::Equals->value,[new Column($column), $value]),
                     );
                 } else {
                     $result->appendExpression($value);

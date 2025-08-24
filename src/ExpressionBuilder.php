@@ -32,128 +32,129 @@ class ExpressionBuilder
         return new Column($name, $table);
     }
 
-    public function binaryOperation(mixed $operand_first, mixed $operand_second, string $operator): BinaryOperation
+    public function binaryOperation(string $operator, array $operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, $operator);
+        return new BinaryOperation($operator, $operands);
     }
+
     public function unaryOperation(mixed $operand, ?string $prefix = null, ?string $postfix = null): UnaryOperation
     {
         return new UnaryOperation($operand, $prefix, $postfix);
     }
 
-    public function sum(mixed $operand_first, mixed $operand_second): BinaryOperation
+    public function sum(mixed ...$operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, '+');
+        return new BinaryOperation('+', $operands);
     }
 
-    public function subtraction(mixed $operand_first, mixed $operand_second): BinaryOperation
+    public function subtraction(mixed ...$operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, '-');
+        return new BinaryOperation('-', $operands);
     }
 
-    public function multiplication(mixed $operand_first, mixed $operand_second): BinaryOperation
+    public function multiplication(mixed ...$operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, '*');
+        return new BinaryOperation('*', $operands);
     }
 
-    public function division(mixed $operand_first, mixed $operand_second): BinaryOperation
+    public function division(mixed ...$operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, '/');
+        return new BinaryOperation('/', $operands);
     }
 
-    public function modulo(mixed $operand_first, mixed $operand_second): BinaryOperation
+    public function modulo(mixed ...$operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, '%');
+        return new BinaryOperation('%', $operands);
     }
 
-    public function exponentiation(mixed $operand_first, mixed $operand_second): BinaryOperation
+    public function exponentiation(mixed ...$operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, '^');
+        return new BinaryOperation('^', $operands);
     }
 
-    public function bitwiseAnd(mixed $operand_first, mixed $operand_second): BinaryOperation
+    public function bitwiseAnd(mixed ...$operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, '&');
+        return new BinaryOperation('&', $operands);
     }
 
-    public function bitwiseOr(mixed $operand_first, mixed $operand_second): BinaryOperation
+    public function bitwiseOr(mixed ...$operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, '|');
+        return new BinaryOperation('|', $operands);
     }
 
-    public function bitwiseXor(mixed $operand_first, mixed $operand_second): BinaryOperation
+    public function bitwiseXor(mixed ...$operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, '#');
+        return new BinaryOperation('#', $operands);
     }
 
-    public function bitwiseShiftLeft(mixed $operand_first, mixed $operand_second): BinaryOperation
+    public function bitwiseShiftLeft(mixed ...$operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, '<<');
+        return new BinaryOperation('<<', $operands);
     }
 
-    public function bitwiseShiftRight(mixed $operand_first, mixed $operand_second): BinaryOperation
+    public function bitwiseShiftRight(mixed ...$operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, '>>');
+        return new BinaryOperation('>>', $operands);
     }
 
-    public function or(mixed $operand_first, mixed $operand_second): BinaryOperation
+    public function or(mixed ...$operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, 'OR');
+        return new BinaryOperation('OR', $operands);
     }
 
-    public function and(mixed $operand_first, mixed $operand_second): BinaryOperation
+    public function and(mixed ...$operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, 'AND');
+        return new BinaryOperation('AND', $operands);
     }
 
-    public function less(mixed $operand_first, mixed $operand_second): BinaryOperation
+    public function less(mixed ...$operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, '<');
+        return new BinaryOperation('<', $operands);
     }
 
-    public function lessOrEqual(mixed $operand_first, mixed $operand_second): BinaryOperation
+    public function lessOrEqual(mixed ...$operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, '<=');
+        return new BinaryOperation('<=', $operands);
     }
 
-    public function greater(mixed $operand_first, mixed $operand_second): BinaryOperation
+    public function greater(mixed ...$operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, '>');
+        return new BinaryOperation('>', $operands);
     }
 
-    public function greaterOrEqual(mixed $operand_first, mixed $operand_second): BinaryOperation
+    public function greaterOrEqual(mixed ...$operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, '>=');
+        return new BinaryOperation('>=', $operands);
     }
 
-    public function equal(mixed $operand_first, mixed $operand_second): BinaryOperation
+    public function equal(mixed ...$operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, '=');
+        return new BinaryOperation('=', $operands);
     }
 
-    public function notEqual(mixed $operand_first, mixed $operand_second): BinaryOperation
+    public function notEqual(mixed ...$operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, '<>');
+        return new BinaryOperation('<>', $operands);
     }
 
-    public function in(mixed $operand_first, mixed $operand_second): BinaryOperation
+    public function in(mixed ...$operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, 'IN');
+        return new BinaryOperation('IN', $operands);
     }
 
-    public function notIn(mixed $operand_first, mixed $operand_second): BinaryOperation
+    public function notIn(mixed ...$operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, 'NOT IN');
+        return new BinaryOperation('NOT IN', $operands);
     }
 
-    public function like(mixed $operand_first, mixed $operand_second): BinaryOperation
+    public function like(mixed ...$operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, 'like');
+        return new BinaryOperation('like', $operands);
     }
 
-    public function ilike(mixed $operand_first, mixed $operand_second): BinaryOperation
+    public function ilike(mixed ...$operands): BinaryOperation
     {
-        return new BinaryOperation($operand_first, $operand_second, 'ilike');
+        return new BinaryOperation('ilike', $operands);
     }
 
     public function squareRoot(mixed $operand): UnaryOperation
