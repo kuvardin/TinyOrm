@@ -84,8 +84,12 @@ abstract class EntityAbstract
         return $result;
     }
 
+    /**
+     * @param JoinAbstract[] $joins
+     */
     public static function findOneByConditions(
         ConditionAbstract|array $conditions,
+        array $joins = [],
         ?SortingSettings $sorting_settings = null,
         ?Connection $connection = null,
         ?Table $table = null,
@@ -93,6 +97,7 @@ abstract class EntityAbstract
     {
         $data = self::findOneRawDataByConditions(
             conditions: is_array($conditions) ? ConditionsList::fromValuesArray($conditions) : $conditions,
+            joins: $joins,
             sorting_settings: $sorting_settings,
             connection: $connection,
             table: $table,
@@ -101,8 +106,12 @@ abstract class EntityAbstract
         return $data === null ? null : self::upsertInCache($data, $connection, $table);
     }
 
+    /**
+     * @param JoinAbstract[] $joins
+     */
     protected static function findOneRawDataByConditions(
         ConditionAbstract|array $conditions,
+        array $joins = [],
         ?SortingSettings $sorting_settings = null,
         ?Connection $connection = null,
         ?Table $table = null,
@@ -111,6 +120,7 @@ abstract class EntityAbstract
     {
         $generator = self::findRawDataByConditions(
             conditions: is_array($conditions) ? ConditionsList::fromValuesArray($conditions) : $conditions,
+            joins: $joins,
             sorting_settings: $sorting_settings,
             limit: 1,
             connection: $connection,
