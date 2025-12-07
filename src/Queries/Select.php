@@ -202,7 +202,7 @@ class Select extends QueryAbstract
             }
 
             if ($grouping_elements_queries !== []) {
-                $result .= 'GROUP BY ';
+                $result .= ' GROUP BY ';
 
                 if ($this->grouping_mode !== null) {
                     $result .= $this->grouping_mode->value . ' ';
