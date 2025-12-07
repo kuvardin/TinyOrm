@@ -12,6 +12,7 @@ use Kuvardin\TinyOrm\Conditions\ConditionsList;
 use Kuvardin\TinyOrm\Enums\RuleForSavingChanges;
 use Kuvardin\TinyOrm\Exception\AlreadyExists;
 use Kuvardin\TinyOrm\Expressions\ExpressionAbstract;
+use Kuvardin\TinyOrm\Grouping\GroupingSimple;
 use Kuvardin\TinyOrm\Joins\JoinAbstract;
 use Kuvardin\TinyOrm\Sorting\SortingSettings;
 use Kuvardin\TinyOrm\Values\ColumnValue;
@@ -395,6 +396,12 @@ abstract class EntityAbstract
                 is_array($conditions) ? ConditionsList::fromValuesArray($conditions) : $conditions,
             );
         }
+
+        $qb->appendGroupingElement(
+            new GroupingSimple([
+                $table->getColumn(self::COL_ID),
+            ]),
+        );
 
         if ($callback !== null) {
             call_user_func($callback, $qb);
