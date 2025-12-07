@@ -203,7 +203,12 @@ abstract class EntityAbstract
             ->createSelectQuery()
             ->setSelectExpressions([
                 SelectExpression::expression(
-                    $connection->expr()->sql("COUNT(*)"),
+                    $connection->expr()->sql(
+                        sprintf(
+                            "COUNT(DISTINCT %s)",
+                            $table->getColumn(self::COL_ID),
+                        ),
+                    ),
                 ),
             ])
             ->setTable($table);
