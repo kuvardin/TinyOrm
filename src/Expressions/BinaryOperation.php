@@ -16,6 +16,8 @@ class BinaryOperation extends ExpressionAbstract
     public function __construct(
         readonly public string $operator,
         readonly public array $operands,
+        readonly public ?string $prefix = null,
+        readonly public ?string $postfix = null,
     )
     {
 
@@ -23,12 +25,24 @@ class BinaryOperation extends ExpressionAbstract
 
     public function getQueryString(Parameters $parameters): string
     {
-        return implode(
+        $result = '';
+
+        if ($this->prefix !== null) {
+            $result .= $this->prefix . ' ';
+        }
+
+        $result .= implode(
             " {$this->operator} ",
             array_map(
                 static fn(mixed $o) => ExpressionBuilder::getArithmeticOperandQueryString($o, $parameters),
                 $this->operands,
             ),
         );
+
+        if ($this->postfix !== null) {
+            $result .= $this->postfix;
+        }
+
+        return $result;
     }
 }

@@ -42,6 +42,21 @@ class ExpressionBuilder
         return new UnaryOperation($operand, $prefix, $postfix);
     }
 
+    public function function(string $name, mixed ...$operands): BinaryOperation
+    {
+        return new BinaryOperation(
+            operator: ',',
+            operands: $operands,
+            prefix: $name . '(',
+            postfix: ')',
+        );
+    }
+
+    public function concat(mixed ...$operands): BinaryOperation
+    {
+        return $this->function('CONCAT', $operands);
+    }
+
     public function sum(mixed ...$operands): BinaryOperation
     {
         return new BinaryOperation('+', $operands);
