@@ -402,11 +402,13 @@ abstract class EntityAbstract
             );
         }
 
-        $qb->appendGroupingElement(
-            new GroupingSimple([
-                $table->getColumn(self::COL_ID),
-            ]),
-        );
+        if ($limit !== 1) {
+            $qb->appendGroupingElement(
+                new GroupingSimple([
+                    $table->getColumn(self::COL_ID),
+                ]),
+            );
+        }
 
         if ($callback !== null) {
             call_user_func($callback, $qb);
