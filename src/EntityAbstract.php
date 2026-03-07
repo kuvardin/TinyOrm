@@ -50,6 +50,11 @@ abstract class EntityAbstract
         $this->id = $data[self::COL_ID];
     }
 
+    public static function getCache(): array
+    {
+        return self::$cache;
+    }
+
     abstract public static function getEntityTableDefault(): Table;
 
     /**
@@ -94,6 +99,7 @@ abstract class EntityAbstract
         ?SortingSettings $sorting_settings = null,
         ?Connection $connection = null,
         ?Table $table = null,
+        bool $group_by_id = true,
     ): ?static
     {
         $data = self::findOneRawDataByConditions(
@@ -102,6 +108,7 @@ abstract class EntityAbstract
             sorting_settings: $sorting_settings,
             connection: $connection,
             table: $table,
+            group_by_id: $group_by_id,
         );
 
         return $data === null ? null : self::upsertInCache($data, $connection, $table);
@@ -116,7 +123,8 @@ abstract class EntityAbstract
         ?SortingSettings $sorting_settings = null,
         ?Connection $connection = null,
         ?Table $table = null,
-        ?callable $callback = null
+        ?callable $callback = null,
+        ?bool $group_by_id = null,
     ): ?array
     {
         $generator = self::findRawDataByConditions(
@@ -126,7 +134,8 @@ abstract class EntityAbstract
             limit: 1,
             connection: $connection,
             table: $table,
-            callback: $callback
+            callback: $callback,
+            group_by_id: $group_by_id,
         );
 
         return $generator->valid() ? $generator->current() : null;
@@ -136,12 +145,14 @@ abstract class EntityAbstract
         ConditionAbstract|array $conditions,
         ?Connection $connection = null,
         ?Table $table = null,
+        bool $group_by_id = true,
     ): static
     {
         $result = self::findOneByConditions(
             conditions: is_array($conditions) ? ConditionsList::fromValuesArray($conditions) : $conditions,
             connection: $connection,
             table: $table,
+            group_by_id: $group_by_id,
         );
 
         if ($result === null) {
@@ -266,6 +277,7 @@ abstract class EntityAbstract
             ],
             connection: $connection,
             table: $table,
+            group_by_id: false,
         );
     }
 
@@ -341,6 +353,7 @@ abstract class EntityAbstract
         ?Connection $connection = null,
         ?Table $table = null,
         ?callable $callback = null,
+        bool $group_by_id = true,
     ): Generator
     {
         $connection ??= Connection::requireConnectionDefault();
@@ -354,6 +367,7 @@ abstract class EntityAbstract
             connection: $connection,
             table: $table,
             callback: $callback,
+            group_by_id: $group_by_id,
         );
 
         if ($generator->valid()) {
@@ -376,6 +390,7 @@ abstract class EntityAbstract
         ?Connection $connection = null,
         ?Table $table = null,
         ?callable $callback = null,
+        ?bool $group_by_id = null,
     ): Generator
     {
         $connection ??= Connection::requireConnectionDefault();
@@ -402,7 +417,7 @@ abstract class EntityAbstract
             );
         }
 
-        if ($limit !== 1) {
+        if ($group_by_id) {
             $qb->appendGroupingElement(
                 new GroupingSimple([
                     $table->getColumn(self::COL_ID),
@@ -431,6 +446,7 @@ abstract class EntityAbstract
             ],
             connection: $this->connection,
             table: $this->entity_table,
+            group_by_id: true,
         );
 
         if ($data !== null) {
