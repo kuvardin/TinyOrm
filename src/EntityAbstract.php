@@ -100,6 +100,7 @@ abstract class EntityAbstract
         ?Connection $connection = null,
         ?Table $table = null,
         bool $group_by_id = true,
+        ?callable $callback = null,
     ): ?static
     {
         $data = self::findOneRawDataByConditions(
@@ -108,6 +109,7 @@ abstract class EntityAbstract
             sorting_settings: $sorting_settings,
             connection: $connection,
             table: $table,
+            callback: $callback,
             group_by_id: $group_by_id,
         );
 
@@ -146,6 +148,7 @@ abstract class EntityAbstract
         ?Connection $connection = null,
         ?Table $table = null,
         bool $group_by_id = true,
+        ?callable $callback = null,
     ): static
     {
         $result = self::findOneByConditions(
@@ -153,6 +156,7 @@ abstract class EntityAbstract
             connection: $connection,
             table: $table,
             group_by_id: $group_by_id,
+            callback: $callback,
         );
 
         if ($result === null) {
@@ -166,6 +170,7 @@ abstract class EntityAbstract
         ConditionAbstract|array|null $conditions = null,
         ?Connection $connection = null,
         ?Table $table = null,
+        ?callable $callback = null,
     ): bool
     {
         $connection ??= Connection::requireConnectionDefault();
@@ -187,6 +192,10 @@ abstract class EntityAbstract
             );
         }
 
+        if ($callback !== null) {
+            call_user_func($callback, $qb);
+        }
+
         $result = $qb
             ->setLimit(1)
             ->execute()
@@ -204,6 +213,7 @@ abstract class EntityAbstract
         ?array $joins = null,
         ?Connection $connection = null,
         ?Table $table = null,
+        ?callable $callback = null,
     ): int
     {
         $connection ??= Connection::requireConnectionDefault();
@@ -232,6 +242,10 @@ abstract class EntityAbstract
             $qb->setWhere(
                 is_array($conditions) ? ConditionsList::fromValuesArray($conditions) : $conditions,
             );
+        }
+
+        if ($callback !== null) {
+            call_user_func($callback, $qb);
         }
 
         $result = $qb
